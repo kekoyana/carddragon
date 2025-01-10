@@ -2,9 +2,10 @@ import { useState } from 'react';
 
 const Game = () => {
   const [position, setPosition] = useState(0); // 現在位置
-  const [cards, setCards] = useState<number[]>([]); // 手札
+  const [cards, setCards] = useState<number[]>([1, 2, 3]); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
+  const [goal, setGoal] = useState(50); // ゴール位置
 
   // ゲーム開始
   const startGame = () => {
@@ -32,7 +33,7 @@ const Game = () => {
     setTurns(prev => prev + 1);
     
     // ゴール判定
-    if (position + card >= 20) {
+    if (position + card >= goal) {
       setGameOver(true);
       return;
     }
@@ -51,7 +52,7 @@ const Game = () => {
     <div className="game">
       <h1>カードドラゴンゲーム</h1>
       <div className="status">
-        <p>現在位置: {position}</p>
+        <p>現在位置: {position} / {goal}</p>
         <p>ターン数: {turns}</p>
       </div>
       <div className="cards">

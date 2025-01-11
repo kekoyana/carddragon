@@ -24,6 +24,36 @@
   margin: 0.5rem 0;
 }
 
+.status .next-cells {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.status .cell-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.status .cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #e9ecef;
+  font-size: 0.9rem;
+}
+
+.status .cell.damage {
+  background: #ffc9c9;
+  color: #c92a2a;
+  font-weight: bold;
+}
+
 .cards {
   display: flex;
   justify-content: center;

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
-// マップデータを生成（50マス）
+// マップデータを生成（51マス：0-50）
 const generateMap = () => {
   const map = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i <= 50; i++) {
     map.push({
-      position: i + 1,
-      isDamage: Math.random() < 0.3 // 30%の確率でダメージマス
+      position: i,
+      isDamage: i > 0 && Math.random() < 0.3 // 30%の確率でダメージマス（0番目はスタート地点なのでダメージなし）
     });
   }
   return map;
@@ -19,7 +19,8 @@ const Game = () => {
   const [hp, setHp] = useState(10); // HP
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [mapData, setMapData] = useState(generateMap()); // マップデータ
-  const [goal, setGoal] = useState(50); // ゴール位置
+  const [goal, setGoal] = useState(50); // ゴール位置（50番目）
+  const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
 
   // ゲーム開始
   const startGame = () => {
@@ -43,7 +44,7 @@ const Game = () => {
 
   // 6マス先までのマス状態を取得
   const getNextCells = () => {
-    return mapData.slice(position, position + 6);
+    return mapData.slice(position, position + 7); // 現在位置を含む次の6マス（合計7マス）
   };
 
   // カードを使用
@@ -55,13 +56,22 @@ const Game = () => {
     setPosition(newPosition);
     setTurns(prev => prev + 1);
     
-    // ダメージ処理
-    const passedCells = mapData.slice(position, newPosition);
-    passedCells.forEach(cell => {
-      if (cell.isDamage) {
-        setHp(prev => Math.max(0, prev - 1));
-      }
-    });
+    // 移動先のマスでダメージ処理
+    const landedCell = mapData[newPosition];
+    if (landedCell?.isDamage) {
+      const damage = Math.floor(Math.random() * 3) + 1;
+      setHp(prev => Math.max(0, prev - damage));
+      setCurrentDamage(damage);
+    } else {
+      setCurrentDamage(0);
+    }
+    
+    // 回復アイテム使用
+    if (typeof card === 'string' && card === 'H') {
+      const healAmount = 3;
+      setHp(prev => Math.min(10, prev + healAmount));
+      setCurrentDamage(-healAmount);
+    }
 
     // HPチェック
     if (hp <= 1) {
@@ -89,7 +99,7 @@ const Game = () => {
     <div className="game">
       <h1>カードドラゴンゲーム</h1>
       <div className="status">
-        <p>現在位置: {position} / {goal}</p>
+        <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
         <p>HP: {hp}</p>
         <p>ターン数: {turns}</p>
         <div className="next-cells">
@@ -98,11 +108,18 @@ const Game = () => {
             {getNextCells().map((cell, i) => (
               <div 
                 key={i}
-                className={`cell ${cell.isDamage ? 'damage' : ''}`}
+                className={`cell ${cell.isDamage ? 'damage' : ''} ${
+                  i === 0 ? 'current' : ''
+                }`}
               >
                 {cell.position}
               </div>
             ))}
+            {currentDamage !== 0 && (
+              <div className={`damage-display ${currentDamage > 0 ? 'damage' : 'heal'}`}>
+                {currentDamage > 0 ? `-${currentDamage}ダメージ！` : `+${-currentDamage}回復！`}
+              </div>
+            )}
           </div>
         </div>
       </div>

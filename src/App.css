@@ -54,6 +54,38 @@
   font-weight: bold;
 }
 
+.status .cell.current {
+  border: 2px solid #228be6;
+}
+
+.damage-display {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.damage-display.damage {
+  color: #c92a2a;
+  background: #ffe3e3;
+}
+
+.damage-display.heal {
+  color: #2b8a3e;
+  background: #d3f9d8;
+}
+
+.cards button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cards button.heal {
+  background: #d3f9d8;
+  color: #2b8a3e;
+}
+
 .cards {
   display: flex;
   justify-content: center;

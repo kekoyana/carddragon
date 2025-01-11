@@ -14,7 +14,7 @@ const generateMap = () => {
 
 const Game = () => {
   const [position, setPosition] = useState(0); // 現在位置
-  const [cards, setCards] = useState<number[]>([1, 2, 3]); // 手札（初期値）
+  const [cards, setCards] = useState<(number | string)[]>([1, 2, 3]); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
   const [hp, setHp] = useState(10); // HP
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
@@ -33,11 +33,20 @@ const Game = () => {
     setMapData(generateMap());
   };
 
+  // 1枚のカードを引く
+  const drawCard = () => {
+    // 20%の確率で回復カード、80%で通常カード
+    if (Math.random() < 0.2) {
+      return 'H';
+    }
+    return Math.floor(Math.random() * 6) + 1;
+  };
+
   // カードを引く
   const drawCards = () => {
     const newCards = [];
     for (let i = 0; i < 3; i++) {
-      newCards.push(Math.floor(Math.random() * 6) + 1);
+      newCards.push(drawCard());
     }
     setCards(newCards);
   };
@@ -48,13 +57,16 @@ const Game = () => {
   };
 
   // カードを使用
-  const playCard = (card: number) => {
+  const playCard = (card: number | string) => {
     if (gameOver) return;
     
-    // 移動
-    const newPosition = position + card;
-    setPosition(newPosition);
-    setTurns(prev => prev + 1);
+    // 移動（回復カードの場合は移動しない）
+    let newPosition = position;
+    if (typeof card === 'number') {
+      newPosition = position + card;
+      setPosition(newPosition);
+      setTurns(prev => prev + 1);
+    }
     
     // 移動先のマスでダメージ処理
     const landedCell = mapData[newPosition];
@@ -89,7 +101,7 @@ const Game = () => {
     setCards(prev => {
       const newCards = prev.filter(c => c !== card);
       while (newCards.length < 3) {
-        newCards.push(Math.floor(Math.random() * 6) + 1);
+        newCards.push(drawCard());
       }
       return newCards;
     });
@@ -129,8 +141,9 @@ const Game = () => {
             key={i}
             onClick={() => playCard(card)}
             disabled={gameOver}
+            className={card === 'H' ? 'heal' : ''}
           >
-            {card}
+            {card === 'H' ? '回復' : card}
           </button>
         ))}
       </div>

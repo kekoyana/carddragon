@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './Game.module.css';
 
 // モンスターインターフェース
 interface Monster {
@@ -51,7 +52,7 @@ const Game = () => {
   const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
-  const [battleLog, setBattleLog] = useState<string[]>([]); // 戦闘ログ
+  const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
   // ゲーム開始
   const startGame = () => {
@@ -108,7 +109,7 @@ const Game = () => {
       const monster = getRandomMonster();
       setCurrentMonster(monster);
       setInBattle(true);
-      setBattleLog([`${monster.name}が現れた！`]);
+      setBattleMessage(`${monster.name}が現れた！`);
     } else {
       setCurrentDamage(0);
     }
@@ -149,16 +150,10 @@ const Game = () => {
     // プレイヤーの攻撃
     const playerDamage = Math.max(1, 3 - currentMonster.defense);
     const newMonsterHp = currentMonster.hp - playerDamage;
-    setBattleLog(prev => [
-      ...prev,
-      `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
-    ]);
+      setBattleMessage(`プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`);
     
     if (newMonsterHp <= 0) {
-      setBattleLog(prev => [
-        ...prev,
-        `${currentMonster.name}を倒した！`
-      ]);
+      setBattleMessage(`${currentMonster.name}を倒した！`);
       setInBattle(false);
       setCurrentMonster(null);
       return;
@@ -167,10 +162,7 @@ const Game = () => {
     // モンスターの反撃
     const monsterDamage = Math.max(0, currentMonster.attack - 1);
     setHp(prev => Math.max(0, prev - monsterDamage));
-    setBattleLog(prev => [
-      ...prev,
-      `${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`
-    ]);
+      setBattleMessage(`${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
 
     // HPチェック
     if (hp - monsterDamage <= 0) {
@@ -189,210 +181,101 @@ const Game = () => {
   };
 
   return (
-    <div className="game">
-      <h1>カードドラゴンゲーム</h1>
-      <div className="status">
-        <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
-        <p>HP: {hp}</p>
-        <p>ターン数: {turns}</p>
-        <div className="next-cells">
-          <p>次の6マス:</p>
-          <div className="cell-container">
-            {getNextCells().map((cell, i) => (
-              <div 
-                key={i}
-                className={`cell ${cell.hasMonster ? 'monster' : ''} ${
-                  i === 0 ? 'current' : ''
-                }`}
-              >
-                {cell.position}
-              </div>
-            ))}
-            {currentDamage !== 0 && (
-              <div className={`damage-display ${currentDamage > 0 ? 'damage' : 'heal'}`}>
-                {currentDamage > 0 ? `-${currentDamage}ダメージ！` : `+${-currentDamage}回復！`}
-              </div>
-            )}
+    <div className={styles.game}>
+      <div className={styles.leftPanel}>
+        <div className={styles.status}>
+          <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
+          <p>HP: {hp}</p>
+          <p>ターン数: {turns}</p>
+          <div className={styles.nextCells}>
+            <p>次の6マス:</p>
+            <div className={styles.cellContainer}>
+              {getNextCells().map((cell, i) => (
+                <div 
+                  key={i}
+                  className={`${styles.cell} ${
+                    cell.hasMonster ? styles.monsterCell : ''
+                  } ${i === 0 ? styles.currentCell : ''}`}
+                >
+                  {cell.position}
+                </div>
+              ))}
+              {currentDamage !== 0 && (
+                <div className={`${styles.damageDisplay} ${
+                  currentDamage > 0 ? styles.damage : styles.heal
+                }`}>
+                  {currentDamage > 0 ? `-${currentDamage}ダメージ！` : `+${-currentDamage}回復！`}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="cards">
-        {cards.map((card, i) => (
-          <button 
-            key={i}
-            onClick={() => playCard(card)}
-            disabled={gameOver}
-            className={card === 'H' ? 'heal' : ''}
-          >
-            {card === 'H' ? '回復' : card}
-          </button>
-        ))}
-      </div>
-      
-      {inBattle && currentMonster && (
-        <div className="battle">
-          <h2>戦闘中！</h2>
-          <div className="monster-info">
-            <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
-          </div>
-          <div className="battle-log">
-            {battleLog.map((log, i) => (
-              <p key={i}>{log}</p>
-            ))}
-          </div>
-          <div className="battle-actions">
-            <button onClick={handleAttack}>攻撃</button>
-          </div>
-        </div>
-      )}
-      
-      {gameOver && (
-        <div className="game-over">
-          {hp <= 0 ? (
+
+        <div className={styles.message}>
+          {inBattle && currentMonster && (
             <>
-              <h2>ゲームオーバー</h2>
-              <p>HPが0になりました...</p>
-            </>
-          ) : (
-            <>
-              <h2>ゲームクリア！</h2>
-              <p>ゴールまで{turns}ターンかかりました！</p>
+              <div className={styles.monsterInfo}>
+                <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
+              </div>
+              <div className={styles.battleMessage}>
+                <p>{battleMessage}</p>
+              </div>
             </>
           )}
-          <button onClick={startGame}>もう一度遊ぶ</button>
+          {gameOver && (
+            <>
+              {hp <= 0 ? (
+                <>
+                  <p className={styles.gameOverMessage}>ゲームオーバー</p>
+                  <p className={styles.gameOverMessage}>HPが0になりました...</p>
+                </>
+              ) : (
+                <>
+                  <p className={styles.gameOverMessage}>ゲームクリア！</p>
+                  <p className={styles.gameOverMessage}>ゴールまで{turns}ターンかかりました！</p>
+                </>
+              )}
+              <button 
+                className={styles.cardButton}
+                onClick={startGame}
+              >
+                もう一度遊ぶ
+              </button>
+            </>
+          )}
         </div>
-      )}
+      </div>
+
+      <div className={styles.action}>
+        <div className={styles.cards}>
+          {cards.map((card, i) => (
+            <button 
+              key={i}
+              onClick={() => playCard(card)}
+              disabled={gameOver}
+              className={`${styles.cardButton} ${
+                card === 'H' ? styles.healButton : ''
+              } ${gameOver ? styles.disabledButton : ''}`}
+            >
+              {card === 'H' ? '回復' : card}
+            </button>
+          ))}
+        </div>
+        
+        {inBattle && currentMonster && (
+          <div className={styles.battleActions}>
+            <button 
+              className={styles.battleActionButton}
+              onClick={handleAttack}
+            >
+              攻撃
+            </button>
+          </div>
+        )}
+      </div>
+      
     </div>
   );
 };
 
 export default Game;
-
-// CSSスタイル
-const styles = `
-.game {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.status {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f5f5f5;
-  border-radius: 8px;
-}
-
-.cell-container {
-  display: flex;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.cell {
-  border: 1px solid #ddd;
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center;
-  min-width: 40px;
-}
-
-.cell.current {
-  background: #e3f2fd;
-}
-
-.cell.monster {
-  background: #ffebee;
-}
-
-.damage-display {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 4px;
-  font-weight: bold;
-}
-
-.damage-display.damage {
-  color: #c62828;
-}
-
-.damage-display.heal {
-  color: #2e7d32;
-}
-
-.cards {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.cards button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background: #2196f3;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.cards button.heal {
-  background: #4caf50;
-}
-
-.cards button:disabled {
-  background: #bdbdbd;
-  cursor: not-allowed;
-}
-
-.battle {
-  margin-top: 20px;
-  padding: 20px;
-  background: #fff3e0;
-  border-radius: 8px;
-}
-
-.monster-info {
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.battle-log {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-bottom: 15px;
-  padding: 10px;
-  background: white;
-  border-radius: 4px;
-}
-
-.battle-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.battle-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background: #ff9800;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.game-over {
-  margin-top: 20px;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  text-align: center;
-}
-`;
-
-// スタイルをドキュメントに追加
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);

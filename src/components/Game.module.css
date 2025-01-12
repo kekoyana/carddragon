@@ -1,22 +1,45 @@
-.app {
-  max-width: 800px;
+.game {
+  width: 1024px;
+  height: 768px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  background: #f0f8ff;
-  min-height: 100vh;
+  background-image: url('/carddragon-bg.webp');
+  background-size: cover;
+  background-position: center;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
 }
 
-.game {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  color: #333;
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  width: 614px; /* 1024 * 6/10 */
+  gap: 1rem;
 }
 
 .status {
-  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  height: 419px; /* 768 * 6/11 */
+}
+
+.message {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 349px; /* 768 * 5/11 */
+}
+
+.action {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 410px; /* 1024 * 4/10 */
 }
 
 .status p {
@@ -24,14 +47,14 @@
   margin: 0.5rem 0;
 }
 
-.status .next-cells {
+.status .nextCells {
   margin: 1rem 0;
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
 }
 
-.status .cell-container {
+.status .cellContainer {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
@@ -48,17 +71,17 @@
   font-size: 0.9rem;
 }
 
-.status .cell.damage {
+.status .monsterCell {
   background: #ffc9c9;
   color: #c92a2a;
   font-weight: bold;
 }
 
-.status .cell.current {
+.status .currentCell {
   border: 2px solid #228be6;
 }
 
-.damage-display {
+.damageDisplay {
   margin-top: 1rem;
   padding: 0.5rem;
   border-radius: 4px;
@@ -66,31 +89,21 @@
   font-size: 1.2rem;
 }
 
-.damage-display.damage {
+.damageDisplay.damage {
   color: #c92a2a;
   background: #ffe3e3;
 }
 
-.damage-display.heal {
+.damageDisplay.heal {
   color: #2b8a3e;
   background: #d3f9d8;
-}
-
-.cards button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cards button.heal {
-  background: #d3f9d8;
-  color: #2b8a3e;
 }
 
 .cards {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 2rem;
+  justify-content: center;
 }
 
 .cards button {
@@ -117,19 +130,19 @@
   cursor: not-allowed;
 }
 
-.game-over {
+.gameOver {
   background: rgba(255, 255, 255, 0.9);
   padding: 2rem;
   border-radius: 10px;
   margin-top: 2rem;
 }
 
-.game-over h2 {
+.gameOver h2 {
   color: #4caf50;
   margin-bottom: 1rem;
 }
 
-.game-over button {
+.gameOver button {
   background: #4caf50;
   color: white;
   border: none;
@@ -140,18 +153,34 @@
   transition: background 0.2s;
 }
 
-.game-over button:hover {
+.gameOver button:hover {
   background: #45a049;
 }
 
-@media (max-width: 600px) {
-  .cards {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .cards button {
-    width: 100%;
-    height: 80px;
-  }
+.monsterInfo {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.battleLog {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+}
+
+.battleActions {
+  margin-top: 10px;
+}
+
+.battleActionButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background: #ff9800;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
 }

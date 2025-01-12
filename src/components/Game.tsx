@@ -190,7 +190,6 @@ const Game = () => {
 
   return (
     <div className="game">
-      <h1>カードドラゴンゲーム</h1>
       <div className="status">
         <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
         <p>HP: {hp}</p>
@@ -216,35 +215,42 @@ const Game = () => {
           </div>
         </div>
       </div>
-      <div className="cards">
-        {cards.map((card, i) => (
-          <button 
-            key={i}
-            onClick={() => playCard(card)}
-            disabled={gameOver}
-            className={card === 'H' ? 'heal' : ''}
-          >
-            {card === 'H' ? '回復' : card}
-          </button>
-        ))}
+
+      <div className="message">
+        {inBattle && currentMonster && (
+          <>
+            <div className="monster-info">
+              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
+            </div>
+            <div className="battle-log">
+              {battleLog.map((log, i) => (
+                <p key={i}>{log}</p>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-      
-      {inBattle && currentMonster && (
-        <div className="battle">
-          <h2>戦闘中！</h2>
-          <div className="monster-info">
-            <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
-          </div>
-          <div className="battle-log">
-            {battleLog.map((log, i) => (
-              <p key={i}>{log}</p>
-            ))}
-          </div>
+
+      <div className="action">
+        <div className="cards">
+          {cards.map((card, i) => (
+            <button 
+              key={i}
+              onClick={() => playCard(card)}
+              disabled={gameOver}
+              className={card === 'H' ? 'heal' : ''}
+            >
+              {card === 'H' ? '回復' : card}
+            </button>
+          ))}
+        </div>
+        
+        {inBattle && currentMonster && (
           <div className="battle-actions">
             <button onClick={handleAttack}>攻撃</button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       
       {gameOver && (
         <div className="game-over">
@@ -271,9 +277,7 @@ export default Game;
 // CSSスタイル
 const styles = `
 .game {
-  max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
   font-family: Arial, sans-serif;
 }
 

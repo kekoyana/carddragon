@@ -35,7 +35,7 @@ const generateMap = () => {
   for (let i = 0; i <= 50; i++) {
     map.push({
       position: i,
-      hasMonster: i > 0 && Math.random() < 0.8 // 80%の確率でモンスターマス（0番目はスタート地点なのでなし）
+      hasMonster: i > 0 && Math.random() < 0.3
     });
   }
   return map;
@@ -146,11 +146,11 @@ const Game = () => {
     // カードを更新
     setCards(prev => {
       const newCards = prev.filter(c => c !== card);
-      while (newCards.length < 8) {
-        newCards.push(drawOneCard());
-      }
       return newCards;
     });
+
+    // ターン経過時に1枚のカードを引く（最大8枚まで）
+    drawOneCard();
   };
 
   // 攻撃処理

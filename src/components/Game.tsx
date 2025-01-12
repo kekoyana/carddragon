@@ -108,10 +108,6 @@ const Game = () => {
       newPosition = position + card;
       setPosition(newPosition);
     }
-    // ターン数更新（移動カードまたは回復カード使用時）
-    if (typeof card === 'number' || card === 'H') {
-      setTurns(prev => prev + 1);
-    }
     
     // 移動先のマスでモンスター遭遇
     const landedCell = mapData[newPosition];
@@ -143,7 +139,10 @@ const Game = () => {
       return;
     }
 
-    // カードを更新
+    // ターン数更新
+    setTurns(prev => prev + 1);
+    
+    // カードを削除
     setCards(prev => {
       const newCards = prev.filter(c => c !== card);
       return newCards;
@@ -188,6 +187,9 @@ const Game = () => {
     
     // ターン数更新
     setTurns(prev => prev + 1);
+
+    // ターン経過時に1枚のカードを引く（最大8枚まで）
+    drawOneCard();
   };
 
   return (

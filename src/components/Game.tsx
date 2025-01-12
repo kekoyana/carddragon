@@ -150,10 +150,10 @@ const Game = () => {
     // プレイヤーの攻撃
     const playerDamage = Math.max(1, 3 - currentMonster.defense);
     const newMonsterHp = currentMonster.hp - playerDamage;
-      setBattleMessage(`プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`);
+    const attackMessage = `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
     
     if (newMonsterHp <= 0) {
-      setBattleMessage(`${currentMonster.name}を倒した！`);
+      setBattleMessage(`${attackMessage}\n${currentMonster.name}を倒した！`);
       setInBattle(false);
       setCurrentMonster(null);
       return;
@@ -162,7 +162,7 @@ const Game = () => {
     // モンスターの反撃
     const monsterDamage = Math.max(0, currentMonster.attack - 1);
     setHp(prev => Math.max(0, prev - monsterDamage));
-      setBattleMessage(`${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
+    setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
 
     // HPチェック
     if (hp - monsterDamage <= 0) {
@@ -187,6 +187,12 @@ const Game = () => {
           <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
           <p>HP: {hp}</p>
           <p>ターン数: {turns}</p>
+          {currentMonster && (
+            <div className={styles.monsterStatus}>
+              <p>戦闘中のモンスター:</p>
+              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
+            </div>
+          )}
           <div className={styles.nextCells}>
             <p>次の6マス:</p>
             <div className={styles.cellContainer}>
@@ -212,16 +218,11 @@ const Game = () => {
         </div>
 
         <div className={styles.message}>
-          {inBattle && currentMonster && (
-            <>
-              <div className={styles.monsterInfo}>
-                <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
-              </div>
-              <div className={styles.battleMessage}>
-                <p>{battleMessage}</p>
-              </div>
-            </>
-          )}
+          <div className={styles.battleMessage}>
+            {battleMessage.split('\n').map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </div>
           {gameOver && (
             <>
               {hp <= 0 ? (

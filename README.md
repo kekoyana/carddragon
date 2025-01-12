@@ -37,5 +37,3 @@ npm run dev
 ## ライセンス
 MIT License
 
-## 作者
-[あなたの名前]

@@ -52,7 +52,7 @@ const Game = () => {
   const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
-  const [battleLog, setBattleLog] = useState<string[]>([]); // 戦闘ログ
+  const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
   // ゲーム開始
   const startGame = () => {
@@ -109,7 +109,7 @@ const Game = () => {
       const monster = getRandomMonster();
       setCurrentMonster(monster);
       setInBattle(true);
-      setBattleLog([`${monster.name}が現れた！`]);
+      setBattleMessage(`${monster.name}が現れた！`);
     } else {
       setCurrentDamage(0);
     }
@@ -150,16 +150,10 @@ const Game = () => {
     // プレイヤーの攻撃
     const playerDamage = Math.max(1, 3 - currentMonster.defense);
     const newMonsterHp = currentMonster.hp - playerDamage;
-    setBattleLog(prev => [
-      ...prev,
-      `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
-    ]);
+      setBattleMessage(`プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`);
     
     if (newMonsterHp <= 0) {
-      setBattleLog(prev => [
-        ...prev,
-        `${currentMonster.name}を倒した！`
-      ]);
+      setBattleMessage(`${currentMonster.name}を倒した！`);
       setInBattle(false);
       setCurrentMonster(null);
       return;
@@ -168,10 +162,7 @@ const Game = () => {
     // モンスターの反撃
     const monsterDamage = Math.max(0, currentMonster.attack - 1);
     setHp(prev => Math.max(0, prev - monsterDamage));
-    setBattleLog(prev => [
-      ...prev,
-      `${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`
-    ]);
+      setBattleMessage(`${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
 
     // HPチェック
     if (hp - monsterDamage <= 0) {
@@ -226,11 +217,30 @@ const Game = () => {
               <div className={styles.monsterInfo}>
                 <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
               </div>
-              <div className={styles.battleLog}>
-                {battleLog.map((log, i) => (
-                  <p key={i}>{log}</p>
-                ))}
+              <div className={styles.battleMessage}>
+                <p>{battleMessage}</p>
               </div>
+            </>
+          )}
+          {gameOver && (
+            <>
+              {hp <= 0 ? (
+                <>
+                  <p className={styles.gameOverMessage}>ゲームオーバー</p>
+                  <p className={styles.gameOverMessage}>HPが0になりました...</p>
+                </>
+              ) : (
+                <>
+                  <p className={styles.gameOverMessage}>ゲームクリア！</p>
+                  <p className={styles.gameOverMessage}>ゴールまで{turns}ターンかかりました！</p>
+                </>
+              )}
+              <button 
+                className={styles.cardButton}
+                onClick={startGame}
+              >
+                もう一度遊ぶ
+              </button>
             </>
           )}
         </div>
@@ -264,27 +274,6 @@ const Game = () => {
         )}
       </div>
       
-      {gameOver && (
-        <div className={styles.gameOver}>
-          {hp <= 0 ? (
-            <>
-              <h2>ゲームオーバー</h2>
-              <p>HPが0になりました...</p>
-            </>
-          ) : (
-            <>
-              <h2>ゲームクリア！</h2>
-              <p>ゴールまで{turns}ターンかかりました！</p>
-            </>
-          )}
-          <button 
-            className={styles.cardButton}
-            onClick={startGame}
-          >
-            もう一度遊ぶ
-          </button>
-        </div>
-      )}
     </div>
   );
 };

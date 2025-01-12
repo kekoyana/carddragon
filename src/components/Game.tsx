@@ -60,7 +60,7 @@ const Game = () => {
     setTurns(0);
     setHp(10);
     setGameOver(false);
-    drawCards();
+    drawInitialCards();
     setGoal(50);
     setMapData(generateMap());
   };
@@ -74,13 +74,23 @@ const Game = () => {
     return Math.floor(Math.random() * 6) + 1;
   };
 
-  // カードを引く
-  const drawCards = () => {
+  // 初期カードを6枚引く
+  const drawInitialCards = () => {
     const newCards = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       newCards.push(drawCard());
     }
     setCards(newCards);
+  };
+
+  // カードを1枚引く（最大8枚まで）
+  const drawOneCard = () => {
+    const newCard = drawCard();
+    setCards(prev => {
+      if (prev.length >= 8) return prev;
+      return [...prev, newCard];
+    });
+    return newCard; // 新しいカードを返す
   };
 
   // 6マス先までのマス状態を取得
@@ -136,8 +146,8 @@ const Game = () => {
     // カードを更新
     setCards(prev => {
       const newCards = prev.filter(c => c !== card);
-      while (newCards.length < 3) {
-        newCards.push(drawCard());
+      while (newCards.length < 8) {
+        newCards.push(drawOneCard());
       }
       return newCards;
     });
@@ -187,12 +197,6 @@ const Game = () => {
           <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
           <p>HP: {hp}</p>
           <p>ターン数: {turns}</p>
-          {currentMonster && (
-            <div className={styles.monsterStatus}>
-              <p>戦闘中のモンスター:</p>
-              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
-            </div>
-          )}
           <div className={styles.nextCells}>
             <p>次の6マス:</p>
             <div className={styles.cellContainer}>
@@ -215,6 +219,12 @@ const Game = () => {
               )}
             </div>
           </div>
+          {currentMonster && (
+            <div className={styles.monsterStatus}>
+              <p>戦闘中のモンスター:</p>
+              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
+            </div>
+          )}
         </div>
 
         <div className={styles.message}>

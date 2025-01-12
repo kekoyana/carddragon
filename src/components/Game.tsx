@@ -221,8 +221,7 @@ const Game = () => {
           </div>
           {currentMonster && (
             <div className={styles.monsterStatus}>
-              <p>戦闘中のモンスター:</p>
-              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
+              <p>戦闘中のモンスター: {currentMonster.name} (HP: {currentMonster.hp})</p>
             </div>
           )}
         </div>

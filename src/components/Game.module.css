@@ -108,19 +108,24 @@
 
 .cards button {
   width: 180px;
-  height: 64px;
-  overflow: hidden; /* 文字がはみ出さないように */
-  text-overflow: ellipsis; /* 文字が長い場合は省略記号を表示 */
-  white-space: nowrap; /* 文字を1行に制限 */
+  height: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
   border: none;
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #333;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .cards button:hover:not(:disabled) {

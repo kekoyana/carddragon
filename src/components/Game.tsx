@@ -281,7 +281,9 @@ const Game = () => {
                 card === 'H' ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''}`}
             >
-              {card === null ? '' : typeof card === 'object' ? `武器${card.power}` : card === 'H' ? '回復' : card}
+              {card === null ? '' : typeof card === 'object' ? 
+                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] : 
+                card === 'H' ? 'ポーション' : `${card}進む`}
             </button>
           ))}
         </div>

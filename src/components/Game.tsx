@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Game.module.css';
 
 // モンスターインターフェース
@@ -42,8 +42,11 @@ const generateMap = () => {
 };
 
 const Game = () => {
+  useEffect(() => {
+    startGame();
+  }, []);
   const [position, setPosition] = useState(0); // 現在位置
-  const [cards, setCards] = useState<(number | string)[]>([1, 2, 3]); // 手札（初期値）
+  const [cards, setCards] = useState<(number | string | { type: string; power: number })[]>(Array(8).fill(null)); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
   const [hp, setHp] = useState(10); // HP
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
@@ -55,7 +58,11 @@ const Game = () => {
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
   // ゲーム開始
-  const startGame = () => {
+  const startGame = async () => {
+    // 過去データのリセット処理を追加
+    setCards(Array(8).fill(null)); // 手札をリセット
+    setCurrentMonster(null); // 現在のモンスターをリセット
+    setBattleMessage(''); // 戦闘メッセージをリセット
     setPosition(0);
     setTurns(0);
     setHp(10);
@@ -65,33 +72,38 @@ const Game = () => {
     setMapData(generateMap());
   };
 
-  // 1枚のカードを引く
-  const drawCard = () => {
-    // 20%の確率で回復カード、80%で通常カード
-    if (Math.random() < 0.2) {
-      return 'H';
-    }
-    return Math.floor(Math.random() * 6) + 1;
-  };
-
-  // 初期カードを6枚引く
+  // 初期カードを5枚引く
   const drawInitialCards = () => {
-    const newCards = [];
-    for (let i = 0; i < 6; i++) {
-      newCards.push(drawCard());
+    for (let i = -1; i < 6; i++) {
+      drawOneCard(); // drawOneCardを5回呼び出す
     }
-    setCards(newCards);
   };
 
-  // カードを1枚引く（最大8枚まで）
+  // カードを1枚引く（空いている手札エリアに配置）
   const drawOneCard = () => {
     const newCard = drawCard();
     setCards(prev => {
-      if (prev.length >= 8) return prev;
-      return [...prev, newCard];
+      const emptyIndices = prev.map((_, index) => index).filter(index => prev[index] === null);
+      if (emptyIndices.length === 0) return prev; // 空いている手札エリアがない場合
+      const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      const newCards = [...prev];
+      newCards[randomIndex] = newCard; // 空いている手札エリアにカードを配置
+      return newCards;
     });
     return newCard; // 新しいカードを返す
   };
+
+  const drawCard = () => {
+    // 20%の確率で回復カード、10%で武器カード、70%で通常カード
+    const randomValue = Math.random();
+    if (randomValue < 0.2) {
+      return 'H'; // 回復カード
+    } else if (randomValue < 0.3) {
+      return { type: 'weapon', power: Math.floor(Math.random() * 5) + 1 }; // 武器カード
+    }
+    return Math.floor(Math.random() * 6) + 1; // 通常カード
+  };
+
 
   // 6マス先までのマス状態を取得
   const getNextCells = () => {
@@ -99,7 +111,7 @@ const Game = () => {
   };
 
   // カードを使用
-  const playCard = (card: number | string) => {
+  const playCard = (card: number | string | { type: string; power: number }) => {
     if (gameOver || inBattle) return;
     
     // 移動（回復カードの場合は移動しない）
@@ -260,7 +272,7 @@ const Game = () => {
 
       <div className={styles.action}>
         <div className={styles.cards}>
-          {cards.map((card, i) => (
+          {cards.map((card, i) => card !== null && (
             <button 
               key={i}
               onClick={() => playCard(card)}
@@ -269,7 +281,7 @@ const Game = () => {
                 card === 'H' ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''}`}
             >
-              {card === 'H' ? '回復' : card}
+              {typeof card === 'object' ? `武器${card}` : card === 'H' ? '回復' : card}
             </button>
           ))}
         </div>

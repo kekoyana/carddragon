@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Game.module.css';
 
 // モンスターインターフェース
@@ -35,15 +35,18 @@ const generateMap = () => {
   for (let i = 0; i <= 50; i++) {
     map.push({
       position: i,
-      hasMonster: i > 0 && Math.random() < 0.8 // 80%の確率でモンスターマス（0番目はスタート地点なのでなし）
+      hasMonster: i > 0 && Math.random() < 0.3
     });
   }
   return map;
 };
 
 const Game = () => {
+  useEffect(() => {
+    startGame();
+  }, []);
   const [position, setPosition] = useState(0); // 現在位置
-  const [cards, setCards] = useState<(number | string)[]>([1, 2, 3]); // 手札（初期値）
+  const [cards, setCards] = useState<(number | string | { type: string; power: number } | null)[]>(Array(8).fill(null)); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
   const [hp, setHp] = useState(10); // HP
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
@@ -55,32 +58,50 @@ const Game = () => {
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
   // ゲーム開始
-  const startGame = () => {
+  const startGame = async () => {
+    // 過去データのリセット処理を追加
+    setCards(Array(8).fill(null)); // 手札をリセット
+    setCurrentMonster(null); // 現在のモンスターをリセット
+    setBattleMessage(''); // 戦闘メッセージをリセット
     setPosition(0);
     setTurns(0);
     setHp(10);
     setGameOver(false);
-    drawCards();
+    drawInitialCards();
     setGoal(50);
     setMapData(generateMap());
   };
 
-  // 1枚のカードを引く
-  const drawCard = () => {
-    // 20%の確率で回復カード、80%で通常カード
-    if (Math.random() < 0.2) {
-      return 'H';
+  // 初期カードを5枚引く
+  const drawInitialCards = () => {
+    for (let i = -1; i < 6; i++) {
+      drawOneCard(); // drawOneCardを5回呼び出す
     }
-    return Math.floor(Math.random() * 6) + 1;
   };
 
-  // カードを引く
-  const drawCards = () => {
-    const newCards = [];
-    for (let i = 0; i < 3; i++) {
-      newCards.push(drawCard());
+  // カードを1枚引く（空いている手札エリアに配置）
+  const drawOneCard = () => {
+    const newCard = drawCard();
+    setCards(prev => {
+      const emptyIndices = prev.map((_, index) => index).filter(index => prev[index] === null);
+      if (emptyIndices.length === 0) return prev; // 空いている手札エリアがない場合
+      const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      const newCards = [...prev];
+      newCards[randomIndex] = newCard; // 空いている手札エリアにカードを配置
+      return newCards;
+    });
+    return newCard; // 新しいカードを返す
+  };
+
+  const drawCard = () => {
+    // 20%の確率で回復カード、10%で武器カード、70%で通常カード
+    const randomValue = Math.random();
+    if (randomValue < 0.2) {
+      return 'H'; // 回復カード
+    } else if (randomValue < 0.3) {
+      return { type: 'weapon', power: Math.floor(Math.random() * 5) + 1 }; // 武器カード
     }
-    setCards(newCards);
+    return Math.floor(Math.random() * 6) + 1; // 通常カード
   };
 
   // 6マス先までのマス状態を取得
@@ -89,18 +110,14 @@ const Game = () => {
   };
 
   // カードを使用
-  const playCard = (card: number | string) => {
-    if (gameOver || inBattle) return;
+  const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
+    if (gameOver || inBattle || card === null) return;
     
     // 移動（回復カードの場合は移動しない）
     let newPosition = position;
     if (typeof card === 'number') {
       newPosition = position + card;
       setPosition(newPosition);
-    }
-    // ターン数更新（移動カードまたは回復カード使用時）
-    if (typeof card === 'number' || card === 'H') {
-      setTurns(prev => prev + 1);
     }
     
     // 移動先のマスでモンスター遭遇
@@ -133,14 +150,18 @@ const Game = () => {
       return;
     }
 
-    // カードを更新
+    // ターン数更新
+    setTurns(prev => prev + 1);
+    
+    // カードを削除（選択したカードのみ）
     setCards(prev => {
-      const newCards = prev.filter(c => c !== card);
-      while (newCards.length < 3) {
-        newCards.push(drawCard());
-      }
+      const newCards = [...prev];
+      newCards[index] = null;
       return newCards;
     });
+
+    // ターン経過時に1枚のカードを引く（最大8枚まで）
+    drawOneCard();
   };
 
   // 攻撃処理
@@ -178,6 +199,9 @@ const Game = () => {
     
     // ターン数更新
     setTurns(prev => prev + 1);
+
+    // ターン経過時に1枚のカードを引く（最大8枚まで）
+    drawOneCard();
   };
 
   return (
@@ -187,12 +211,6 @@ const Game = () => {
           <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
           <p>HP: {hp}</p>
           <p>ターン数: {turns}</p>
-          {currentMonster && (
-            <div className={styles.monsterStatus}>
-              <p>戦闘中のモンスター:</p>
-              <p>{currentMonster.name} (HP: {currentMonster.hp})</p>
-            </div>
-          )}
           <div className={styles.nextCells}>
             <p>次の6マス:</p>
             <div className={styles.cellContainer}>
@@ -215,6 +233,11 @@ const Game = () => {
               )}
             </div>
           </div>
+          {currentMonster && (
+            <div className={styles.monsterStatus}>
+              <p>戦闘中のモンスター: {currentMonster.name} (HP: {currentMonster.hp})</p>
+            </div>
+          )}
         </div>
 
         <div className={styles.message}>
@@ -252,13 +275,15 @@ const Game = () => {
           {cards.map((card, i) => (
             <button 
               key={i}
-              onClick={() => playCard(card)}
-              disabled={gameOver}
+              onClick={() => playCard(card, i)}
+              disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
                 card === 'H' ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''}`}
             >
-              {card === 'H' ? '回復' : card}
+              {card === null ? '' : typeof card === 'object' ? 
+                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] : 
+                card === 'H' ? 'ポーション' : `${card}進む`}
             </button>
           ))}
         </div>
@@ -274,7 +299,6 @@ const Game = () => {
           </div>
         )}
       </div>
-      
     </div>
   );
 };

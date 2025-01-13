@@ -250,7 +250,6 @@ const Game = () => {
           <p>HP: {hp}</p>
           <p>ターン数: {turns}</p>
           <div className={styles.nextCells}>
-            <p>次の6マス:</p>
             <div className={styles.cellContainer}>
               {getNextCells().map((cell, i) => (
                 <div 

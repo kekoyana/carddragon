@@ -34,6 +34,12 @@ npm install
 npm run dev
 ```
 
+## デプロイ方法
+```bash
+npm run build
+npm run deploy
+```
+
 ## ライセンス
 MIT License
 

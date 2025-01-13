@@ -52,7 +52,7 @@ const Game = () => {
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [mapData, setMapData] = useState(generateMap()); // マップデータ
   const [goal, setGoal] = useState(50); // ゴール位置（50番目）
-  const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
+  // const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
@@ -111,7 +111,7 @@ const Game = () => {
 
   // カードを使用
   const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
-    if (gameOver || card === null) return;
+    if (gameOver || card === null || (inBattle && typeof card === 'number')) return; // 歩数カードの場合はinBattleの条件を追加
     
     // 武器カードの場合、直接攻撃を実行
     if (typeof card === 'object' && card.type === 'weapon') {
@@ -171,14 +171,14 @@ const Game = () => {
       setInBattle(true);
       setBattleMessage(`${monster.name}が現れた！`);
     } else {
-      setCurrentDamage(0);
+      // setCurrentDamage(0);
     }
     
     // 回復アイテム使用
     if (typeof card === 'string' && card === 'H') {
       const healAmount = 3;
       setHp(prev => Math.min(10, prev + healAmount));
-      setCurrentDamage(-healAmount);
+      // setCurrentDamage(-healAmount); // この行を削除
       setBattleMessage('+3回復！');
     }
 

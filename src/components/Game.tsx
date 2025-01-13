@@ -46,7 +46,7 @@ const Game = () => {
     startGame();
   }, []);
   const [position, setPosition] = useState(0); // 現在位置
-  const [cards, setCards] = useState<(number | string | { type: string; power: number })[]>(Array(8).fill(null)); // 手札（初期値）
+  const [cards, setCards] = useState<(number | string | { type: string; power: number } | null)[]>(Array(8).fill(null)); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
   const [hp, setHp] = useState(10); // HP
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
@@ -104,15 +104,14 @@ const Game = () => {
     return Math.floor(Math.random() * 6) + 1; // 通常カード
   };
 
-
   // 6マス先までのマス状態を取得
   const getNextCells = () => {
     return mapData.slice(position, position + 7); // 現在位置を含む次の6マス（合計7マス）
   };
 
   // カードを使用
-  const playCard = (card: number | string | { type: string; power: number }) => {
-    if (gameOver || inBattle) return;
+  const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
+    if (gameOver || inBattle || card === null) return;
     
     // 移動（回復カードの場合は移動しない）
     let newPosition = position;
@@ -154,9 +153,10 @@ const Game = () => {
     // ターン数更新
     setTurns(prev => prev + 1);
     
-    // カードを削除
+    // カードを削除（選択したカードのみ）
     setCards(prev => {
-      const newCards = prev.filter(c => c !== card);
+      const newCards = [...prev];
+      newCards[index] = null;
       return newCards;
     });
 
@@ -272,16 +272,16 @@ const Game = () => {
 
       <div className={styles.action}>
         <div className={styles.cards}>
-          {cards.map((card, i) => card !== null && (
+          {cards.map((card, i) => (
             <button 
               key={i}
-              onClick={() => playCard(card)}
-              disabled={gameOver}
+              onClick={() => playCard(card, i)}
+              disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
                 card === 'H' ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''}`}
             >
-              {typeof card === 'object' ? `武器${card}` : card === 'H' ? '回復' : card}
+              {card === null ? '' : typeof card === 'object' ? `武器${card.power}` : card === 'H' ? '回復' : card}
             </button>
           ))}
         </div>
@@ -297,7 +297,6 @@ const Game = () => {
           </div>
         )}
       </div>
-      
     </div>
   );
 };

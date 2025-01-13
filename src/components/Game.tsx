@@ -179,6 +179,7 @@ const Game = () => {
       const healAmount = 3;
       setHp(prev => Math.min(10, prev + healAmount));
       setCurrentDamage(-healAmount);
+      setBattleMessage('+3回復！');
     }
 
     // HPチェック
@@ -261,13 +262,6 @@ const Game = () => {
                   {cell.position}
                 </div>
               ))}
-              {currentDamage !== 0 && (
-                <div className={`${styles.damageDisplay} ${
-                  currentDamage > 0 ? styles.damage : styles.heal
-                }`}>
-                  {currentDamage > 0 ? `-${currentDamage}ダメージ！` : `+${-currentDamage}回復！`}
-                </div>
-              )}
             </div>
           </div>
           {currentMonster && (

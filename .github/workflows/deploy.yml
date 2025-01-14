@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Configure Git user
+        run: |
+          git config --global user.email "kekoyana0@gmail.com"
+          git config --global user.name "kekoyana"
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:

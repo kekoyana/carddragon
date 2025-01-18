@@ -116,30 +116,7 @@ const Game = () => {
     // 武器カードの場合、直接攻撃を実行
     if (typeof card === 'object' && card.type === 'weapon') {
       if (!currentMonster) return;
-      
-      // 武器カードの効果を計算
-      const weaponBonus = card.power;
-      const playerDamage = Math.max(1, 3 + weaponBonus - currentMonster.defense);
-      const attackMessage = `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1]}で攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
-      
-      const newMonsterHp = currentMonster.hp - playerDamage;
-      
-      if (newMonsterHp <= 0) {
-        setBattleMessage(`${attackMessage}\n${currentMonster.name}を倒した！`);
-        setInBattle(false);
-        setCurrentMonster(null);
-      } else {
-        // モンスターの反撃
-        const monsterDamage = Math.max(0, currentMonster.attack - 1);
-        setHp(prev => Math.max(0, prev - monsterDamage));
-        setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
-        
-        // モンスターのHP更新
-        setCurrentMonster(prev => prev ? {
-          ...prev,
-          hp: newMonsterHp
-        } : null);
-      }
+      attackMonster(card.power);
       
       // カードを削除
       setCards(prev => {
@@ -208,13 +185,15 @@ const Game = () => {
     drawOneCard();
   };
 
-  // 攻撃処理（武器なし）
-  const handleAttack = () => {
+  // 共通の攻撃処理
+  const attackMonster = (weaponPower: number = 0) => {
     if (!currentMonster) return;
-    
-    // プレイヤーの攻撃
-    const playerDamage = Math.max(1, 3 - currentMonster.defense);
-    const attackMessage = `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
+
+    // 武器の効果を計算
+    const playerDamage = Math.max(1, 3 + weaponPower - currentMonster.defense);
+    const attackMessage = weaponPower > 0 
+      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
+      : `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
     
     const newMonsterHp = currentMonster.hp - playerDamage;
     
@@ -239,8 +218,13 @@ const Game = () => {
     // ターン数更新
     setTurns(prev => prev + 1);
 
-    // ターン経過時に1枚のカードを引く（最大8枚まで）
+    // ターン経過時に1枚のカードを引く
     drawOneCard();
+  };
+
+  // 攻撃処理（武器なし）
+  const handleAttack = () => {
+    attackMonster();
   };
 
   return (

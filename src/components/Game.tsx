@@ -58,19 +58,21 @@ const Game = () => {
 
   const turnEnd = () => {
     // HPチェック
-    if (hp <= 1) {
-      setGameOver(true);
-      return;
-    }
-    
-    // ゴール判定
-    if (position >= goal) {
-      setGameOver(true);
-      return;
-    }
+    useEffect(() => {
+      if (hp <= 0) {
+        setGameOver(true);
+        return;
+      }
+      
+      // ゴール判定
+      if (position >= goal) {
+        setGameOver(true);
+        return;
+      }
 
-    setTurns(prev => prev + 1);
-    drawOneCard();
+      setTurns(prev => prev + 1);
+      drawOneCard();
+    });
   };
 
   // 共通の攻撃処理

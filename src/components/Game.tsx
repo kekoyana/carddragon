@@ -56,8 +56,19 @@ const Game = () => {
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
-  // ターン終了処理
   const turnEnd = () => {
+    // HPチェック
+    if (hp <= 1) {
+      setGameOver(true);
+      return;
+    }
+    
+    // ゴール判定
+    if (position >= goal) {
+      setGameOver(true);
+      return;
+    }
+
     setTurns(prev => prev + 1);
     drawOneCard();
   };
@@ -152,7 +163,7 @@ const Game = () => {
   const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
     if (gameOver || card === null || (inBattle && typeof card === 'number')) return; // 歩数カードの場合はinBattleの条件を追加
     
-    // 武器カードの場合、直接攻撃を実行
+    // 武器カードの場合、攻撃を実行
     if (typeof card === 'object' && card.type === 'weapon') {
       if (!currentMonster) return;
       attackMonster(card.power);
@@ -193,18 +204,6 @@ const Game = () => {
       setHp(prev => Math.min(10, prev + healAmount));
       // setCurrentDamage(-healAmount); // この行を削除
       setBattleMessage('+3回復！');
-    }
-
-    // HPチェック
-    if (hp <= 1) {
-      setGameOver(true);
-      return;
-    }
-
-    // ゴール判定
-    if (newPosition >= goal) {
-      setGameOver(true);
-      return;
     }
 
     // ターン数更新
@@ -299,6 +298,7 @@ const Game = () => {
             <button 
               className={styles.battleActionButton}
               onClick={() => attackMonster()}
+              disabled={gameOver}
             >
               攻撃
             </button>

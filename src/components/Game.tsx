@@ -18,18 +18,16 @@ const MONSTERS: Monster[] = [
   { name: 'ドラゴン', hp: 15, attack: 5, defense: 4, isBoss: true }
 ];
 
-// ランダムなモンスターを取得
 const getRandomMonster = (): Monster => {
   // 80%で通常モンスター、20%でボス
   const isBoss = Math.random() < 0.2;
-  const availableMonsters = isBoss 
+  const availableMonsters = isBoss
     ? MONSTERS.filter(m => m.isBoss)
     : MONSTERS.filter(m => !m.isBoss);
   
   return availableMonsters[Math.floor(Math.random() * availableMonsters.length)];
 };
 
-// マップデータを生成（51マス：0-50）
 const generateMap = () => {
   const map = [];
   for (let i = 0; i <= 50; i++) {
@@ -58,9 +56,10 @@ const Game = () => {
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
-  // ターン数を更新するメソッド
-  const updateTurn = () => {
+  // ターン終了処理
+  const turnEnd = () => {
     setTurns(prev => prev + 1);
+    drawOneCard();
   };
 
   // 共通の攻撃処理
@@ -94,10 +93,7 @@ const Game = () => {
     } : null);
     
     // ターン数更新
-    updateTurn();
-
-    // ターン経過時に1枚のカードを引く
-    drawOneCard();
+    turnEnd();
   };
 
   // ゲーム開始
@@ -169,10 +165,7 @@ const Game = () => {
       });
       
       // ターン数更新処理を統一
-      updateTurn();
-      
-      // ターン経過時に1枚のカードを引く
-      drawOneCard();
+      turnEnd();
       return;
     }
     
@@ -215,7 +208,7 @@ const Game = () => {
     }
 
     // ターン数更新
-    updateTurn();
+    turnEnd();
     
     // カードを削除（選択したカードのみ）
     setCards(prev => {
@@ -223,9 +216,6 @@ const Game = () => {
       newCards[index] = null;
       return newCards;
     });
-
-    // ターン経過時に1枚のカードを引く（最大8枚まで）
-    drawOneCard();
   };
 
   return (

@@ -45,6 +45,7 @@ const Game = () => {
   useEffect(() => {
     startGame();
   }, []);
+  
   const [position, setPosition] = useState(0); // 現在位置
   const [cards, setCards] = useState<(number | string | { type: string; power: number } | null)[]>(Array(8).fill(null)); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
@@ -56,6 +57,48 @@ const Game = () => {
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
+
+  // ターン数を更新するメソッド
+  const updateTurn = () => {
+    setTurns(prev => prev + 1);
+  };
+
+  // 共通の攻撃処理
+  const attackMonster = (weaponPower: number = 0) => {
+    if (!currentMonster) return;
+
+    // 武器の効果を計算
+    const playerDamage = Math.max(1, 3 + weaponPower - currentMonster.defense);
+    const attackMessage = weaponPower > 0 
+      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
+      : `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
+    
+    const newMonsterHp = currentMonster.hp - playerDamage;
+    
+    if (newMonsterHp <= 0) {
+      setBattleMessage(`${attackMessage}\n${currentMonster.name}を倒した！`);
+      setInBattle(false);
+      setCurrentMonster(null);
+      return;
+    }
+
+    // モンスターの反撃
+    const monsterDamage = Math.max(0, currentMonster.attack - 1);
+    setHp(prev => Math.max(0, prev - monsterDamage));
+    setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
+    
+    // モンスターのHP更新
+    setCurrentMonster(prev => prev ? {
+      ...prev,
+      hp: newMonsterHp
+    } : null);
+    
+    // ターン数更新
+    updateTurn();
+
+    // ターン経過時に1枚のカードを引く
+    drawOneCard();
+  };
 
   // ゲーム開始
   const startGame = async () => {
@@ -125,8 +168,8 @@ const Game = () => {
         return newCards;
       });
       
-      // ターン数更新
-      setTurns(prev => prev + 1);
+      // ターン数更新処理を統一
+      updateTurn();
       
       // ターン経過時に1枚のカードを引く
       drawOneCard();
@@ -172,7 +215,7 @@ const Game = () => {
     }
 
     // ターン数更新
-    setTurns(prev => prev + 1);
+    updateTurn();
     
     // カードを削除（選択したカードのみ）
     setCards(prev => {
@@ -183,48 +226,6 @@ const Game = () => {
 
     // ターン経過時に1枚のカードを引く（最大8枚まで）
     drawOneCard();
-  };
-
-  // 共通の攻撃処理
-  const attackMonster = (weaponPower: number = 0) => {
-    if (!currentMonster) return;
-
-    // 武器の効果を計算
-    const playerDamage = Math.max(1, 3 + weaponPower - currentMonster.defense);
-    const attackMessage = weaponPower > 0 
-      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
-      : `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
-    
-    const newMonsterHp = currentMonster.hp - playerDamage;
-    
-    if (newMonsterHp <= 0) {
-      setBattleMessage(`${attackMessage}\n${currentMonster.name}を倒した！`);
-      setInBattle(false);
-      setCurrentMonster(null);
-      return;
-    }
-
-    // モンスターの反撃
-    const monsterDamage = Math.max(0, currentMonster.attack - 1);
-    setHp(prev => Math.max(0, prev - monsterDamage));
-    setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
-    
-    // モンスターのHP更新
-    setCurrentMonster(prev => prev ? {
-      ...prev,
-      hp: newMonsterHp
-    } : null);
-    
-    // ターン数更新
-    setTurns(prev => prev + 1);
-
-    // ターン経過時に1枚のカードを引く
-    drawOneCard();
-  };
-
-  // 攻撃処理（武器なし）
-  const handleAttack = () => {
-    attackMonster();
   };
 
   return (
@@ -307,7 +308,7 @@ const Game = () => {
           <div className={styles.battleActions}>
             <button 
               className={styles.battleActionButton}
-              onClick={handleAttack}
+              onClick={() => attackMonster()}
             >
               攻撃
             </button>

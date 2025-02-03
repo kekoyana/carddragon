@@ -51,7 +51,6 @@ const Game = () => {
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [mapData, setMapData] = useState(generateMap()); // マップデータ
   const [goal, setGoal] = useState(50); // ゴール位置（50番目）
-  // const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ

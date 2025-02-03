@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
+
 .game {
   width: 1024px;
   height: 640px;
@@ -8,54 +10,79 @@
   padding: 1rem;
   display: flex;
   gap: 1rem;
-  filter: brightness(0.8); /* Darken the overall game area */
+  filter: brightness(0.7) saturate(0.8);
+  position: relative;
+  font-family: 'Crimson Text', serif;
+}
+
+.game::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
 }
 
 .leftPanel {
   display: flex;
   flex-direction: column;
-  width: 614px; /* 1024 * 6/10 */
+  width: 614px;
   gap: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .status {
-  background: rgba(50, 50, 50, 0.9); /* Darker background for status */
+  background: rgba(20, 20, 25, 0.95);
   border-radius: 10px;
   padding: 1rem;
   height: 320px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
-  color: #ffffff; /* Change text color to white for better readability */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8),
+              inset 0 0 30px rgba(83, 0, 0, 0.3);
+  color: #e0e0e0;
+  border: 1px solid rgba(150, 0, 0, 0.3);
 }
 
 .message {
-  background: rgba(30, 30, 30, 0.9); /* Darker message area */
+  background: rgba(15, 15, 20, 0.95);
   border-radius: 10px;
   padding: 1rem;
   overflow-y: auto;
   height: 240px;
-  color: #fff; /* White text for contrast */
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8),
+              inset 0 0 30px rgba(83, 0, 0, 0.3);
+  border: 1px solid rgba(150, 0, 0, 0.3);
 }
 
 .action {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(25, 25, 30, 0.95);
   border-radius: 10px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 410px; /* 1024 * 4/10 */
+  width: 410px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8),
+              inset 0 0 30px rgba(83, 0, 0, 0.3);
+  border: 1px solid rgba(150, 0, 0, 0.3);
 }
 
 .status p {
   font-size: 1.2rem;
   margin: 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .status .nextCells {
   margin: 1rem 0;
   padding: 1rem;
-  background: #f8f9fa;
+  background: rgba(30, 30, 35, 0.95);
   border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(83, 0, 0, 0.3);
 }
 
 .status .cellContainer {
@@ -71,36 +98,30 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  background: #e9ecef;
+  background: #2a2a30;
+  color: #e0e0e0;
   font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .status .monsterCell {
-  background: #ffc9c9;
-  color: #c92a2a;
+  background: linear-gradient(145deg, #3a0000, #600);
+  color: #ff9999;
   font-weight: bold;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
 
 .status .currentCell {
-  border: 2px solid #228be6;
+  border: 2px solid #800;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
 }
 
-.damageDisplay {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.damageDisplay.damage {
-  color: #c92a2a;
-  background: #ffe3e3;
-}
-
-.damageDisplay.heal {
-  color: #2b8a3e;
-  background: #d3f9d8;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .cards {
@@ -116,26 +137,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  border: none;
+  border: 1px solid rgba(150, 0, 0, 0.3);
   border-radius: 10px;
-  background: linear-gradient(145deg, #4a4a4a, #2c2c2c); /* Dark gradient */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(145deg, #2a2a30, #1a1a20);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(83, 0, 0, 0.3);
   font-size: 1.5rem;
   font-weight: bold;
-  color: #fff; /* White text for buttons */
+  color: #e0e0e0;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s; /* Added background transition */
+  transition: all 0.3s ease;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Crimson Text', serif;
 }
 
 .cards button:hover:not(:disabled) {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(145deg, #6a6a6a, #4a4a4a); /* Lighter gradient on hover */
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+              0 0 30px rgba(255, 0, 0, 0.2);
+  background: linear-gradient(145deg, #3a3a40, #2a2a30);
+  color: #ff9999;
 }
 
 .cards button:disabled {
@@ -143,58 +169,66 @@
   cursor: not-allowed;
 }
 
-.gameOver {
-  background: rgba(50, 50, 50, 0.9); /* Darker game over area */
-  padding: 2rem;
-  border-radius: 10px;
-  margin-top: 2rem;
-  color: #fff; /* White text for contrast */
-}
-
-.gameOver h2 {
-  color: #4caf50;
-  margin-bottom: 1rem;
-}
-
-.gameOver button {
-  background: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.gameOver button:hover {
-  background: #45a049;
-}
-
-.monsterInfo {
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.battleLog {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-bottom: 15px;
-  padding: 10px;
-  background: white;
-  border-radius: 4px;
-}
-
-.battleActions {
-  margin-top: 10px;
-}
-
 .battleActionButton {
-  padding: 10px 20px;
-  border: none;
+  padding: 15px 30px;
+  border: 1px solid rgba(150, 0, 0, 0.3);
   border-radius: 4px;
-  background: #ff9800;
-  color: white;
+  background: linear-gradient(145deg, #600, #400);
+  color: #ff9999;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.2rem;
+  font-family: 'Crimson Text', serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(83, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.battleActionButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6),
+              0 0 30px rgba(255, 0, 0, 0.2);
+  background: linear-gradient(145deg, #800, #600);
+}
+
+.monsterStatus {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(60, 0, 0, 0.3);
+  border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.1);
+}
+
+.battleMessage {
+  color: #ff9999;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.gameOverMessage {
+  color: #ff6666;
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.healButton {
+  background: linear-gradient(145deg, #1a2a1a, #0a1a0a) !important;
+  color: #90ff90 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(0, 83, 0, 0.3) !important;
+}
+
+.healButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #2a3a2a, #1a2a1a) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+              0 0 30px rgba(0, 255, 0, 0.2) !important;
 }

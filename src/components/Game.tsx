@@ -58,21 +58,19 @@ const Game = () => {
 
   const turnEnd = () => {
     // HPチェック
-    useEffect(() => {
-      if (hp <= 0) {
-        setGameOver(true);
-        return;
-      }
-      
-      // ゴール判定
-      if (position >= goal) {
-        setGameOver(true);
-        return;
-      }
+    if (hp <= 0) {
+      setGameOver(true);
+      return;
+    }
+    
+    // ゴール判定
+    if (position >= goal) {
+      setGameOver(true);
+      return;
+    }
 
-      setTurns(prev => prev + 1);
-      drawOneCard();
-    });
+    setTurns(prev => prev + 1);
+    drawOneCard();
   };
 
   // 共通の攻撃処理
@@ -96,8 +94,15 @@ const Game = () => {
 
     // モンスターの反撃
     const monsterDamage = Math.max(0, currentMonster.attack - 1);
-    setHp(prev => Math.max(0, prev - monsterDamage));
+    const newHp = Math.max(0, hp - monsterDamage);
+    setHp(newHp);
     setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
+    
+    // HPが0になった場合は即座にゲームオーバー
+    if (newHp <= 0) {
+      setGameOver(true);
+      return;
+    }
     
     // モンスターのHP更新
     setCurrentMonster(prev => prev ? {

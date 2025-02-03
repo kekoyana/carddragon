@@ -51,28 +51,14 @@ const Game = () => {
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [mapData, setMapData] = useState(generateMap()); // マップデータ
   const [goal, setGoal] = useState(50); // ゴール位置（50番目）
-  // const [currentDamage, setCurrentDamage] = useState(0); // 現在のダメージ
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
   const turnEnd = () => {
-    // HPチェック
-    useEffect(() => {
-      if (hp <= 0) {
-        setGameOver(true);
-        return;
-      }
-      
-      // ゴール判定
-      if (position >= goal) {
-        setGameOver(true);
-        return;
-      }
-
-      setTurns(prev => prev + 1);
-      drawOneCard();
-    });
+    // ターン数を増やし、新しいカードを引く
+    setTurns(prev => prev + 1);
+    drawOneCard();
   };
 
   // 共通の攻撃処理
@@ -109,8 +95,15 @@ const Game = () => {
     turnEnd();
   };
 
+  // hp または position が変更されたときに gameOver を設定する
+  useEffect(() => {
+    if (hp <= 0 || position >= goal) {
+      setGameOver(true);
+    }
+  }, [hp, position]);
+
   // ゲーム開始
-  const startGame = async () => {
+  const startGame = () => {
     // 過去データのリセット処理を追加
     setCards(Array(8).fill(null)); // 手札をリセット
     setCurrentMonster(null); // 現在のモンスターをリセット
@@ -126,8 +119,8 @@ const Game = () => {
 
   // 初期カードを5枚引く
   const drawInitialCards = () => {
-    for (let i = -1; i < 5; i++) {
-      drawOneCard(); // drawOneCardを5回呼び出す
+    for (let i = 0; i < 5; i++) {
+      drawOneCard(); // drawOneCard を5回呼び出す
     }
   };
 
@@ -163,7 +156,7 @@ const Game = () => {
 
   // カードを使用
   const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
-    if (gameOver || card === null || (inBattle && typeof card === 'number')) return; // 歩数カードの場合はinBattleの条件を追加
+    if (gameOver || card === null || (inBattle && typeof card === 'number')) return; // 歩数カードの場合は inBattle の条件を追加
     
     // 武器カードの場合、攻撃を実行
     if (typeof card === 'object' && card.type === 'weapon') {
@@ -177,8 +170,6 @@ const Game = () => {
         return newCards;
       });
       
-      // ターン数更新処理を統一
-      turnEnd();
       return;
     }
     
@@ -196,15 +187,12 @@ const Game = () => {
       setCurrentMonster(monster);
       setInBattle(true);
       setBattleMessage(`${monster.name}が現れた！`);
-    } else {
-      // setCurrentDamage(0);
     }
     
     // 回復アイテム使用
     if (typeof card === 'string' && card === 'H') {
       const healAmount = 3;
       setHp(prev => Math.min(10, prev + healAmount));
-      // setCurrentDamage(-healAmount); // この行を削除
       setBattleMessage('+3回復！');
     }
 

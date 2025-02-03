@@ -56,59 +56,90 @@ const Game = () => {
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
 
-  const turnEnd = () => {
-    // HPチェック
+  // HPチェックとゲームオーバー判定を行う共通関数
+  const checkGameStatus = () => {
     if (hp <= 0) {
       setGameOver(true);
-      return;
+      return true;
     }
     
-    // ゴール判定
     if (position >= goal) {
       setGameOver(true);
-      return;
+      return true;
     }
+    return false;
+  };
 
+  const turnEnd = () => {
+    if (checkGameStatus()) return;
+    
     setTurns(prev => prev + 1);
     drawOneCard();
+  };
+
+  // ダメージ計算
+  const calculateDamage = (attacker: 'player' | 'monster', weaponPower: number = 0) => {
+    if (!currentMonster) return 0;
+    
+    if (attacker === 'player') {
+      return Math.max(1, 3 + weaponPower - currentMonster.defense);
+    } else {
+      return Math.max(0, currentMonster.attack - 1);
+    }
+  };
+
+  // 攻撃メッセージの生成
+  const getAttackMessage = (weaponPower: number, damage: number) => {
+    if (!currentMonster) return '';
+    return weaponPower > 0
+      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${damage}ダメージ！`
+      : `プレイヤーの攻撃！${currentMonster.name}に${damage}ダメージ！`;
+  };
+
+  // バトル結果の処理
+  const processBattleResult = (message: string, newMonsterHp: number) => {
+    setBattleMessage(message);
+    if (!currentMonster) return;
+    
+    if (newMonsterHp <= 0) {
+      setInBattle(false);
+      setCurrentMonster(null);
+    } else {
+      setCurrentMonster(prev => prev ? {
+        ...prev,
+        hp: newMonsterHp
+      } : null);
+    }
   };
 
   // 共通の攻撃処理
   const attackMonster = (weaponPower: number = 0) => {
     if (!currentMonster) return;
 
-    // 武器の効果を計算
-    const playerDamage = Math.max(1, 3 + weaponPower - currentMonster.defense);
-    const attackMessage = weaponPower > 0 
-      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${playerDamage}ダメージ！`
-      : `プレイヤーの攻撃！${currentMonster.name}に${playerDamage}ダメージ！`;
-    
+    // プレイヤーの攻撃
+    const playerDamage = calculateDamage('player', weaponPower);
+    const attackMessage = getAttackMessage(weaponPower, playerDamage);
     const newMonsterHp = currentMonster.hp - playerDamage;
     
     if (newMonsterHp <= 0) {
-      setBattleMessage(`${attackMessage}\n${currentMonster.name}を倒した！`);
-      setInBattle(false);
-      setCurrentMonster(null);
+      processBattleResult(`${attackMessage}\n${currentMonster.name}を倒した！`, newMonsterHp);
+      turnEnd();
       return;
     }
 
     // モンスターの反撃
-    const monsterDamage = Math.max(0, currentMonster.attack - 1);
+    const monsterDamage = calculateDamage('monster');
     const newHp = Math.max(0, hp - monsterDamage);
     setHp(newHp);
-    setBattleMessage(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`);
+    
+    // バトル結果の処理
+    processBattleResult(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`, newMonsterHp);
     
     // HPが0になった場合は即座にゲームオーバー
     if (newHp <= 0) {
       setGameOver(true);
       return;
     }
-    
-    // モンスターのHP更新
-    setCurrentMonster(prev => prev ? {
-      ...prev,
-      hp: newMonsterHp
-    } : null);
     
     // ターン数更新
     turnEnd();
@@ -166,62 +197,64 @@ const Game = () => {
     return mapData.slice(position, position + 7); // 現在位置を含む次の6マス（合計7マス）
   };
 
-  // カードを使用
-  const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
-    if (gameOver || card === null || (inBattle && typeof card === 'number')) return; // 歩数カードの場合はinBattleの条件を追加
+  // カードの削除
+  const removeCard = (index: number) => {
+    setCards(prev => {
+      const newCards = [...prev];
+      newCards[index] = null;
+      return newCards;
+    });
+  };
+
+  // 移動処理
+  const handleMovement = (steps: number) => {
+    const newPosition = position + steps;
+    setPosition(newPosition);
     
-    // 武器カードの場合、攻撃を実行
-    if (typeof card === 'object' && card.type === 'weapon') {
-      if (!currentMonster) return;
-      attackMonster(card.power);
-      
-      // カードを削除
-      setCards(prev => {
-        const newCards = [...prev];
-        newCards[index] = null;
-        return newCards;
-      });
-      
-      // ターン数更新処理を統一
-      turnEnd();
-      return;
-    }
-    
-    // 移動（回復カードの場合は移動しない）
-    let newPosition = position;
-    if (typeof card === 'number') {
-      newPosition = position + card;
-      setPosition(newPosition);
-    }
-    
-    // 移動先のマスでモンスター遭遇
     const landedCell = mapData[newPosition];
     if (landedCell?.hasMonster) {
       const monster = getRandomMonster();
       setCurrentMonster(monster);
       setInBattle(true);
       setBattleMessage(`${monster.name}が現れた！`);
-    } else {
-      // setCurrentDamage(0);
     }
+  };
+
+  // 回復処理
+  const handleHealing = () => {
+    const healAmount = 3;
+    setHp(prev => Math.min(10, prev + healAmount));
+    setBattleMessage('+3回復！');
+  };
+
+  // 武器カード処理
+  const handleWeaponCard = (power: number) => {
+    if (!currentMonster) return false;
+    attackMonster(power);
+    return true;
+  };
+
+  // カードを使用
+  const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
+    if (gameOver || card === null || (inBattle && typeof card === 'number')) return;
+
+    let processed = true;
     
-    // 回復アイテム使用
-    if (typeof card === 'string' && card === 'H') {
-      const healAmount = 3;
-      setHp(prev => Math.min(10, prev + healAmount));
-      // setCurrentDamage(-healAmount); // この行を削除
-      setBattleMessage('+3回復！');
+    // カードタイプごとの処理
+    if (typeof card === 'object' && card.type === 'weapon') {
+      processed = handleWeaponCard(card.power);
+    } else if (typeof card === 'number') {
+      handleMovement(card);
+    } else if (card === 'H') {
+      handleHealing();
+    } else {
+      processed = false;
     }
 
-    // ターン数更新
-    turnEnd();
-    
-    // カードを削除（選択したカードのみ）
-    setCards(prev => {
-      const newCards = [...prev];
-      newCards[index] = null;
-      return newCards;
-    });
+    if (processed) {
+      removeCard(index);
+      turnEnd();
+    }
   };
 
   return (

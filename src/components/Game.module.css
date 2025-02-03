@@ -232,3 +232,60 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
               0 0 30px rgba(0, 255, 0, 0.2) !important;
 }
+
+/* 捨てるモード関連のスタイル */
+.discardMode {
+  background: rgba(60, 20, 20, 0.95) !important;
+  transition: background-color 0.3s ease;
+}
+
+.discardModeCard {
+  border: 1px solid rgba(200, 0, 0, 0.5) !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2) !important;
+}
+
+.discardModeCard:hover:not(:disabled) {
+  background: linear-gradient(145deg, #4a0000, #300) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3) !important;
+}
+
+.discardAction {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.discardActionButton {
+  padding: 12px 24px;
+  border: 1px solid rgba(150, 0, 0, 0.3);
+  border-radius: 4px;
+  background: linear-gradient(145deg, #3a0000, #600);
+  color: #ff9999;
+  font-size: 1.1rem;
+  font-family: 'Crimson Text', serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.discardActionButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #600, #400);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cancelButton {
+  background: linear-gradient(145deg, #2a2a30, #1a1a20);
+  border: 1px solid rgba(150, 150, 150, 0.3);
+  color: #e0e0e0;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #3a3a40, #2a2a30);
+}
+
+.discardActionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

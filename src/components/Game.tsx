@@ -54,6 +54,7 @@ const Game = () => {
   const [inBattle, setInBattle] = useState(false); // 戦闘中フラグ
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null); // 現在のモンスター
   const [battleMessage, setBattleMessage] = useState(''); // 現在の戦闘メッセージ
+  const [isDiscardMode, setIsDiscardMode] = useState(false); // 捨てるモードフラグ
 
   // HPチェックとゲームオーバー判定を行う共通関数
   const checkGameStatus = () => {
@@ -233,9 +234,26 @@ const Game = () => {
     return true;
   };
 
+  // カードを捨てる
+  const handleDiscard = (index: number) => {
+    if (gameOver || !cards[index]) return;
+    removeCard(index);
+    turnEnd();
+    setIsDiscardMode(false);
+  };
+
   // カードを使用
   const playCard = (card: number | string | { type: string; power: number } | null, index: number) => {
-    if (gameOver || card === null || (inBattle && typeof card === 'number')) return;
+    if (gameOver || card === null) return;
+    
+    // 捨てるモード時はカードを捨てる
+    if (isDiscardMode) {
+      handleDiscard(index);
+      return;
+    }
+
+    // 戦闘中は移動カードは使用不可
+    if (inBattle && typeof card === 'number') return;
 
     let processed = true;
     
@@ -314,27 +332,29 @@ const Game = () => {
         </div>
       </div>
 
-      <div className={styles.action}>
+      <div className={`${styles.action} ${isDiscardMode ? styles.discardMode : ''}`}>
         <div className={styles.cards}>
           {cards.map((card, i) => (
-            <button 
+            <button
               key={i}
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
                 card === 'H' ? styles.healButton : ''
-              } ${gameOver ? styles.disabledButton : ''}`}
+              } ${gameOver ? styles.disabledButton : ''} ${
+                isDiscardMode ? styles.discardModeCard : ''
+              }`}
             >
-              {card === null ? '' : typeof card === 'object' ? 
-                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] : 
+              {card === null ? '' : typeof card === 'object' ?
+                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] :
                 card === 'H' ? 'ポーション' : `${card}進む`}
             </button>
           ))}
         </div>
         
-        {inBattle && currentMonster && (
+        {inBattle && currentMonster && !isDiscardMode && (
           <div className={styles.battleActions}>
-            <button 
+            <button
               className={styles.battleActionButton}
               onClick={() => attackMonster()}
               disabled={gameOver}
@@ -343,6 +363,16 @@ const Game = () => {
             </button>
           </div>
         )}
+
+        <div className={styles.discardAction}>
+          <button
+            className={`${styles.discardActionButton} ${isDiscardMode ? styles.cancelButton : ''}`}
+            onClick={() => setIsDiscardMode(!isDiscardMode)}
+            disabled={gameOver}
+          >
+            {isDiscardMode ? 'キャンセル' : 'カードを捨てる'}
+          </button>
+        </div>
       </div>
     </div>
   );

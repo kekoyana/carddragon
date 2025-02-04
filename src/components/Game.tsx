@@ -98,10 +98,10 @@ const Game = () => {
   const getAttackMessage = (weaponPower: number, damage: number) => {
     if (!currentMonster) return '';
     const getWeaponName = (power: number) => {
-      if (power <= 2) return ['ダガー', 'ショートソード'][power - 1];
-      if (power <= 5) return ['ロングソード', 'バトルアックス', 'メイス'][power - 3];
-      if (power <= 9) return ['ミスリルソード', 'フレイムブレード', 'ドラゴンキラー', 'ルーンブレード'][power - 6];
-      return ['デーモンスレイヤー', 'エクスカリバー', '破壊の剣', '伝説の剣'][Math.min(3, Math.floor((power - 10) / 23))];
+      if (power <= 2) return [`ダガー(${power})`, `ショートソード(${power})`][power - 1];
+      if (power <= 5) return [`ロングソード(${power})`, `バトルアックス(${power})`, `メイス(${power})`][power - 3];
+      if (power <= 9) return [`ミスリルソード(${power})`, `フレイムブレード(${power})`, `ドラゴンキラー(${power})`, `ルーンブレード(${power})`][power - 6];
+      return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `破壊の剣(${power})`, `伝説の剣(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
     };
 
     return weaponPower > 0
@@ -378,7 +378,7 @@ const Game = () => {
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
-                card === 'H' ? styles.healButton : ''
+                (card === 'H' || card === 'H+') ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''} ${
                 isDiscardMode ? styles.discardModeCard : ''
               }`}
@@ -386,10 +386,10 @@ const Game = () => {
               {card === null ? '' : typeof card === 'object' ?
                 (() => {
                   const power = card.power;
-                  if (power <= 2) return ['ダガー', 'ショートソード'][power - 1];
-                  if (power <= 5) return ['ロングソード', 'バトルアックス', 'メイス'][power - 3];
-                  if (power <= 9) return ['ミスリルソード', 'フレイムブレード', 'ドラゴンキラー', 'ルーンブレード'][power - 6];
-                  return ['デーモンスレイヤー', 'エクスカリバー', '破壊の剣', '伝説の剣'][Math.min(3, Math.floor((power - 10) / 23))];
+                  if (power <= 2) return [`ダガー(${power})`, `ショートソード(${power})`][power - 1];
+                  if (power <= 5) return [`ロングソード(${power})`, `バトルアックス(${power})`, `メイス(${power})`][power - 3];
+                  if (power <= 9) return [`ミスリルソード(${power})`, `フレイムブレード(${power})`, `ドラゴンキラー(${power})`, `ルーンブレード(${power})`][power - 6];
+                  return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `破壊の剣(${power})`, `伝説の剣(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
                 })() :
                 card === 'H' ? 'ポーション' :
                 card === 'H+' ? 'ポーション+' : `${card}進む`}

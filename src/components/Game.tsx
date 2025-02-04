@@ -234,6 +234,17 @@ const Game = () => {
     return true;
   };
 
+  // eslint-disable-next-line no-unused-vars
+  // 逃げる処理：逃げたら10マス後退する
+  const runAway = () => {
+    const newPosition = Math.max(0, position - 10);
+    setPosition(newPosition);
+    setBattleMessage("逃げた！10マス後退する！");
+    setInBattle(false);
+    setCurrentMonster(null);
+    turnEnd();
+  };
+  
   // カードを捨てる
   const handleDiscard = (index: number) => {
     if (gameOver || !cards[index]) return;
@@ -360,6 +371,13 @@ const Game = () => {
               disabled={gameOver}
             >
               攻撃
+            </button>
+            <button
+              className={styles.battleActionButton}
+              onClick={runAway}
+              disabled={gameOver}
+            >
+              逃げる
             </button>
           </div>
         )}

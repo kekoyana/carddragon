@@ -188,10 +188,12 @@ const Game = () => {
   };
 
   const drawCard = () => {
-    // 20%の確率で回復カード、10%で武器カード、70%で通常カード
+    // 15%の確率で通常ポーション、5%の確率でポーション+、10%で武器カード、70%で通常カード
     const randomValue = Math.random();
-    if (randomValue < 0.2) {
+    if (randomValue < 0.15) {
       return 'H'; // 回復カード
+    } else if (randomValue < 0.2) {
+      return 'H+'; // 回復カード+
     } else if (randomValue < 0.3) {
       return { type: 'weapon', power: Math.floor(Math.random() * 5) + 1 }; // 武器カード
     }
@@ -227,10 +229,10 @@ const Game = () => {
   };
 
   // 回復処理
-  const handleHealing = () => {
-    const healAmount = 3;
+  const handleHealing = (card: string) => {
+    const healAmount = card === 'H+' ? 10 : 3;
     setHp(prev => Math.min(10, prev + healAmount));
-    setBattleMessage('+3回復！');
+    setBattleMessage(`+${healAmount}回復！`);
   };
 
   // 武器カード処理
@@ -279,8 +281,8 @@ const Game = () => {
       processed = handleWeaponCard(card.power);
     } else if (typeof card === 'number') {
       handleMovement(card);
-    } else if (card === 'H') {
-      handleHealing();
+    } else if (card === 'H' || card === 'H+') {
+      handleHealing(card);
     } else {
       processed = false;
     }
@@ -364,7 +366,8 @@ const Game = () => {
             >
               {card === null ? '' : typeof card === 'object' ?
                 ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] :
-                card === 'H' ? 'ポーション' : `${card}進む`}
+                card === 'H' ? 'ポーション' :
+                card === 'H+' ? 'ポーション+' : `${card}進む`}
             </button>
           ))}
         </div>

@@ -97,8 +97,15 @@ const Game = () => {
   // 攻撃メッセージの生成
   const getAttackMessage = (weaponPower: number, damage: number) => {
     if (!currentMonster) return '';
+    const getWeaponName = (power: number) => {
+      if (power <= 2) return ['ダガー', 'ショートソード'][power - 1];
+      if (power <= 5) return ['ロングソード', 'バトルアックス', 'メイス'][power - 3];
+      if (power <= 9) return ['ミスリルソード', 'フレイムブレード', 'ドラゴンキラー', 'ルーンブレード'][power - 6];
+      return ['デーモンスレイヤー', 'エクスカリバー', '破壊の剣', '伝説の剣'][Math.min(3, Math.floor((power - 10) / 23))];
+    };
+
     return weaponPower > 0
-      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${damage}ダメージ！`
+      ? `プレイヤーの${getWeaponName(weaponPower)}で攻撃！${currentMonster.name}に${damage}ダメージ！`
       : `プレイヤーの攻撃！${currentMonster.name}に${damage}ダメージ！`;
   };
 
@@ -195,7 +202,19 @@ const Game = () => {
     } else if (randomValue < 0.2) {
       return 'H+'; // 回復カード+
     } else if (randomValue < 0.3) {
-      return { type: 'weapon', power: Math.floor(Math.random() * 5) + 1 }; // 武器カード
+      // 武器カードの抽選
+      const weaponRoll = Math.random();
+      let power;
+      if (weaponRoll < 0.4) {        // 40% - 弱い武器
+        power = Math.floor(Math.random() * 2) + 1;  // 1-2
+      } else if (weaponRoll < 0.7) { // 30% - 中程度の武器
+        power = Math.floor(Math.random() * 3) + 3;  // 3-5
+      } else if (weaponRoll < 0.9) { // 20% - 強い武器
+        power = Math.floor(Math.random() * 4) + 6;  // 6-9
+      } else {                       // 10% - とても強い武器
+        power = Math.floor(Math.random() * 91) + 10; // 10-100
+      }
+      return { type: 'weapon', power }; // 武器カード
     }
     return Math.floor(Math.random() * 6) + 1; // 通常カード
   };
@@ -365,7 +384,13 @@ const Game = () => {
               }`}
             >
               {card === null ? '' : typeof card === 'object' ?
-                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] :
+                (() => {
+                  const power = card.power;
+                  if (power <= 2) return ['ダガー', 'ショートソード'][power - 1];
+                  if (power <= 5) return ['ロングソード', 'バトルアックス', 'メイス'][power - 3];
+                  if (power <= 9) return ['ミスリルソード', 'フレイムブレード', 'ドラゴンキラー', 'ルーンブレード'][power - 6];
+                  return ['デーモンスレイヤー', 'エクスカリバー', '破壊の剣', '伝説の剣'][Math.min(3, Math.floor((power - 10) / 23))];
+                })() :
                 card === 'H' ? 'ポーション' :
                 card === 'H+' ? 'ポーション+' : `${card}進む`}
             </button>

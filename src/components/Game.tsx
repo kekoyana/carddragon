@@ -98,10 +98,10 @@ const Game = () => {
   const getAttackMessage = (weaponPower: number, damage: number) => {
     if (!currentMonster) return '';
     const getWeaponName = (power: number) => {
-      if (power <= 2) return [`ダガー(${power})`, `ショートソード(${power})`][power - 1];
-      if (power <= 5) return [`ロングソード(${power})`, `バトルアックス(${power})`, `メイス(${power})`][power - 3];
-      if (power <= 9) return [`ミスリルソード(${power})`, `フレイムブレード(${power})`, `ドラゴンキラー(${power})`, `ルーンブレード(${power})`][power - 6];
-      return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `破壊の剣(${power})`, `伝説の剣(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
+      if (power <= 2) return [`ダガー(${power})`, `ブロンズソード(${power})`][power - 1];
+      if (power <= 5) return [`バスタードソード(${power})`, `バトルアクス(${power})`, `ウォーハンマー(${power})`][power - 3];
+      if (power <= 9) return [`ミスリルブレード(${power})`, `フレイムソード(${power})`, `ドラゴンバスター(${power})`, `ルーンブレード(${power})`][power - 6];
+      return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `クリスタルソード(${power})`, `ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
     };
 
     return weaponPower > 0
@@ -386,10 +386,10 @@ const Game = () => {
               {card === null ? '' : typeof card === 'object' ?
                 (() => {
                   const power = card.power;
-                  if (power <= 2) return [`ダガー(${power})`, `ショートソード(${power})`][power - 1];
-                  if (power <= 5) return [`ロングソード(${power})`, `バトルアックス(${power})`, `メイス(${power})`][power - 3];
-                  if (power <= 9) return [`ミスリルソード(${power})`, `フレイムブレード(${power})`, `ドラゴンキラー(${power})`, `ルーンブレード(${power})`][power - 6];
-                  return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `破壊の剣(${power})`, `伝説の剣(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
+                  if (power <= 2) return [`ダガー(${power})`, `ブロンズソード(${power})`][power - 1];
+                  if (power <= 5) return [`バスタードソード(${power})`, `バトルアクス(${power})`, `ウォーハンマー(${power})`][power - 3];
+                  if (power <= 9) return [`ミスリルブレード(${power})`, `フレイムソード(${power})`, `ドラゴンバスター(${power})`, `ルーンブレード(${power})`][power - 6];
+                  return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `クリスタルソード(${power})`, `ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
                 })() :
                 card === 'H' ? 'ポーション' :
                 card === 'H+' ? 'ポーション+' : `${card}進む`}

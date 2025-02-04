@@ -133,7 +133,7 @@
 
 .cards button {
   width: 180px;
-  height: 80px;
+  height: 90px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
@@ -142,8 +142,9 @@
   background: linear-gradient(145deg, #2a2a30, #1a1a20);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
               inset 0 0 20px rgba(83, 0, 0, 0.3);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
+  line-height: 1.2;
   color: #e0e0e0;
   cursor: pointer;
   transition: all 0.3s ease;

@@ -63,15 +63,10 @@ const Game = () => {
       return true;
     }
     
-    if (position > goal) {
+    // ボスを倒した時のみゲームクリア
+    if (position === 50 && !inBattle && !currentMonster) {
       setGameOver(true);
       return true;
-    }
-    
-    if (position === goal && !inBattle && !currentMonster) {
-      setInBattle(true);
-      setCurrentMonster({ name: "ドラゴン", hp: 100, attack: 6, defense: 3, isBoss: true });
-      return false;
     }
     return false;
   };
@@ -235,11 +230,19 @@ const Game = () => {
 
   // 移動処理
   const handleMovement = (steps: number) => {
-    const newPosition = position + steps;
+    const newPosition = Math.min(50, position + steps);
     setPosition(newPosition);
     
+    if (newPosition === 50 && !currentMonster) {
+      // ボス出現
+      setInBattle(true);
+      setCurrentMonster({ name: "ドラゴン", hp: 100, attack: 6, defense: 3, isBoss: true });
+      setBattleMessage("ドラゴンが現れた！");
+      return;
+    }
+
     const landedCell = mapData[newPosition];
-    if (landedCell?.hasMonster) {
+    if (landedCell?.hasMonster && newPosition < 50) {
       const monster = getRandomMonster();
       setCurrentMonster(monster);
       setInBattle(true);
@@ -261,8 +264,7 @@ const Game = () => {
     return true;
   };
 
-  // eslint-disable-next-line no-unused-vars
-  // 逃げる処理：逃げたら10マス後退する
+  // 逃げる処理：10マス後退する
   const runAway = () => {
     const newPosition = Math.max(0, position - 10);
     setPosition(newPosition);

@@ -8,14 +8,21 @@ interface Monster {
   attack: number;
   defense: number;
   isBoss?: boolean;
+  exp?: number;  // 経験値
 }
 
 // モンスターデータ
 const MONSTERS: Monster[] = [
-  { name: 'スライム', hp: 3, attack: 1, defense: 0 },
-  { name: 'ゴブリン', hp: 5, attack: 2, defense: 1 },
-  { name: 'オーク', hp: 8, attack: 3, defense: 2 },
-  { name: 'ワイバーン', hp: 15, attack: 5, defense: 4 },
+  { name: 'スライム', hp: 3, attack: 1, defense: 0, exp: 2 },
+  { name: 'ゴブリン', hp: 5, attack: 2, defense: 1, exp: 3 },
+  { name: 'オーク', hp: 8, attack: 3, defense: 2, exp: 5 },
+  { name: 'ワイバーン', hp: 15, attack: 5, defense: 4, exp: 8 },
+  { name: 'コボルド', hp: 4, attack: 2, defense: 0, exp: 2 },
+  { name: 'スケルトン', hp: 6, attack: 3, defense: 1, exp: 4 },
+  { name: 'ゾンビ', hp: 10, attack: 2, defense: 2, exp: 5 },
+  { name: 'ハーピー', hp: 12, attack: 4, defense: 2, exp: 6 },
+  { name: 'ガーゴイル', hp: 14, attack: 4, defense: 3, exp: 7 },
+  { name: 'キメラ', hp: 18, attack: 6, defense: 3, exp: 9 }
 ];
 
 const getRandomMonster = (): Monster => {
@@ -47,7 +54,11 @@ const Game = () => {
   const [position, setPosition] = useState(0); // 現在位置
   const [cards, setCards] = useState<(number | string | { type: string; power: number } | null)[]>(Array(8).fill(null)); // 手札（初期値）
   const [turns, setTurns] = useState(0); // ターン数
-  const [hp, setHp] = useState(10); // HP
+  const [level, setLevel] = useState(1); // レベル
+  const [exp, setExp] = useState(0); // 経験値
+  const [maxHp, setMaxHp] = useState(10); // 最大HP
+  const [hp, setHp] = useState(10); // 現在HP
+  const [attack, setAttack] = useState(3); // 基本攻撃力
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [mapData, setMapData] = useState(generateMap()); // マップデータ
   const [goal, setGoal] = useState(50); // ゴール位置（50番目）
@@ -78,12 +89,30 @@ const Game = () => {
     drawOneCard();
   };
 
+  // 必要経験値計算
+  const getRequiredExp = (currentLevel: number) => {
+    return currentLevel * 5;
+  };
+
+  // レベルアップチェック
+  const checkLevelUp = () => {
+    const requiredExp = getRequiredExp(level);
+    if (exp >= requiredExp) {
+      setLevel(prev => prev + 1);
+      setExp(prev => prev - requiredExp);
+      setMaxHp(prev => prev + 2);
+      setHp(prev => prev + 2);
+      setAttack(prev => prev + 1);
+      setBattleMessage(prev => `${prev}\nレベルアップ！ Level ${level} → ${level + 1}`);
+    }
+  };
+
   // ダメージ計算
   const calculateDamage = (attacker: 'player' | 'monster', weaponPower: number = 0) => {
     if (!currentMonster) return 0;
     
     if (attacker === 'player') {
-      return Math.max(1, 3 + weaponPower - currentMonster.defense);
+      return Math.max(1, attack + weaponPower - currentMonster.defense);
     } else {
       return Math.max(0, currentMonster.attack - 1);
     }
@@ -106,13 +135,22 @@ const Game = () => {
 
   // バトル結果の処理
   const processBattleResult = (message: string, newMonsterHp: number) => {
-    setBattleMessage(message);
     if (!currentMonster) return;
     
     if (newMonsterHp <= 0) {
+      // 経験値獲得
+      const monsterExp = currentMonster.exp || 0;
+      if (monsterExp > 0) {
+        setExp(prev => prev + monsterExp);
+        setBattleMessage(`${message}\n${monsterExp}の経験値を獲得！`);
+        checkLevelUp();
+      } else {
+        setBattleMessage(message);
+      }
       setInBattle(false);
       setCurrentMonster(null);
     } else {
+      setBattleMessage(message);
       setCurrentMonster(prev => prev ? {
         ...prev,
         hp: newMonsterHp
@@ -161,7 +199,11 @@ const Game = () => {
     setBattleMessage(''); // 戦闘メッセージをリセット
     setPosition(0);
     setTurns(0);
+    setLevel(1);
+    setExp(0);
+    setMaxHp(10);
     setHp(10);
+    setAttack(3);
     setGameOver(false);
     drawInitialCards();
     setGoal(50);
@@ -253,7 +295,7 @@ const Game = () => {
   // 回復処理
   const handleHealing = (card: string) => {
     const healAmount = card === 'H+' ? 10 : 3;
-    setHp(prev => Math.min(10, prev + healAmount));
+    setHp(prev => Math.min(maxHp, prev + healAmount));
     setBattleMessage(`+${healAmount}回復！`);
   };
 
@@ -319,7 +361,9 @@ const Game = () => {
       <div className={styles.leftPanel}>
         <div className={styles.status}>
           <p>現在位置: {position}マス目 / ゴール: {goal}マス目</p>
-          <p>HP: {hp}</p>
+          <p>Level: {level} (次のレベルまで: {getRequiredExp(level) - exp}exp)</p>
+          <p>HP: {hp}/{maxHp}</p>
+          <p>攻撃力: {attack}</p>
           <p>ターン数: {turns}</p>
           <div className={styles.nextCells}>
             <div className={styles.cellContainer}>

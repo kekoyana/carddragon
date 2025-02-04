@@ -15,7 +15,7 @@ const MONSTERS: Monster[] = [
   { name: 'スライム', hp: 3, attack: 1, defense: 0 },
   { name: 'ゴブリン', hp: 5, attack: 2, defense: 1 },
   { name: 'オーク', hp: 8, attack: 3, defense: 2 },
-  { name: 'ドラゴン', hp: 15, attack: 5, defense: 4, isBoss: true }
+  { name: 'ワイバーン', hp: 15, attack: 5, defense: 4 },
 ];
 
 const getRandomMonster = (): Monster => {
@@ -63,9 +63,15 @@ const Game = () => {
       return true;
     }
     
-    if (position >= goal) {
+    if (position > goal) {
       setGameOver(true);
       return true;
+    }
+    
+    if (position === goal && !inBattle && !currentMonster) {
+      setInBattle(true);
+      setCurrentMonster({ name: "ドラゴン", hp: 100, attack: 6, defense: 3, isBoss: true });
+      return false;
     }
     return false;
   };

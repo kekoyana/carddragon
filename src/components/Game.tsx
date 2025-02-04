@@ -378,21 +378,23 @@ const Game = () => {
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
-                (card === 'H' || card === 'H+') ? styles.healButton : ''
-              } ${gameOver ? styles.disabledButton : ''} ${
-                isDiscardMode ? styles.discardModeCard : ''
-              }`}
+               (card === 'H' || card === 'H+') ? styles.healButton :
+               typeof card === 'number' ? styles.moveButton :
+               typeof card === 'object' ? styles.weaponButton : ''
+             } ${gameOver ? styles.disabledButton : ''} ${
+               isDiscardMode ? styles.discardModeCard : ''
+             }`}
             >
               {card === null ? '' : typeof card === 'object' ?
                 (() => {
                   const power = card.power;
-                  if (power <= 2) return [`ダガー(${power})`, `ブロンズソード(${power})`][power - 1];
-                  if (power <= 5) return [`バスタードソード(${power})`, `バトルアクス(${power})`, `ウォーハンマー(${power})`][power - 3];
-                  if (power <= 9) return [`ミスリルブレード(${power})`, `フレイムソード(${power})`, `ドラゴンバスター(${power})`, `ルーンブレード(${power})`][power - 6];
-                  return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `クリスタルソード(${power})`, `ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
+                  if (power <= 2) return [`⚔️ ダガー(${power})`, `⚔️ ブロンズソード(${power})`][power - 1];
+                  if (power <= 5) return [`⚔️ バスタードソード(${power})`, `⚔️ バトルアクス(${power})`, `⚔️ ウォーハンマー(${power})`][power - 3];
+                  if (power <= 9) return [`⚔️ ミスリルブレード(${power})`, `⚔️ フレイムソード(${power})`, `⚔️ ドラゴンバスター(${power})`, `⚔️ ルーンブレード(${power})`][power - 6];
+                  return [`⚔️ デーモンスレイヤー(${power})`, `⚔️ エクスカリバー(${power})`, `⚔️ クリスタルソード(${power})`, `⚔️ ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
                 })() :
-                card === 'H' ? 'ポーション' :
-                card === 'H+' ? 'ポーション+' : `${card}進む`}
+                card === 'H' ? '🧪 ポーション' :
+                card === 'H+' ? '🧪 ポーション+' : `👣 ${card}進む`}
             </button>
           ))}
         </div>

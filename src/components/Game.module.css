@@ -137,17 +137,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  border: 1px solid rgba(150, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   background: linear-gradient(145deg, #2a2a30, #1a1a20);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
-              inset 0 0 20px rgba(83, 0, 0, 0.3);
+              inset 0 0 20px rgba(255, 255, 255, 0.1),
+              0 0 10px rgba(255, 255, 255, 0.1);
   font-size: 1.2rem;
   font-weight: bold;
   line-height: 1.2;
-  color: #e0e0e0;
+  color: #ffffff;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
   padding: 8px;
   display: flex;
   align-items: center;
@@ -157,12 +160,41 @@
   font-family: 'Crimson Text', serif;
 }
 
+.cards button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: lightBeam 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes lightBeam {
+  0% {
+    transform: rotate(45deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(100%);
+  }
+}
+
 .cards button:hover:not(:disabled) {
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
-              0 0 30px rgba(255, 0, 0, 0.2);
+              0 0 30px rgba(255, 255, 255, 0.3),
+              inset 0 0 20px rgba(255, 255, 255, 0.2);
   background: linear-gradient(145deg, #3a3a40, #2a2a30);
-  color: #ff9999;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .cards button:disabled {
@@ -219,6 +251,89 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.healButton {
+  background: linear-gradient(145deg, #1a3a1a, #0a2a0a) !important;
+  color: #90ff90 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(0, 255, 0, 0.15),
+              0 0 15px rgba(0, 255, 0, 0.2) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5) !important;
+  border-color: rgba(0, 255, 0, 0.3) !important;
+}
+
+.healButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #2a4a2a, #1a3a1a) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+              inset 0 0 30px rgba(0, 255, 0, 0.2),
+              0 0 25px rgba(0, 255, 0, 0.3) !important;
+  text-shadow: 0 0 15px rgba(0, 255, 0, 0.7) !important;
+}
+
+.healButton::before {
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 255, 0, 0.1),
+    transparent
+  ) !important;
+}
+
+/* 移動カード用のスタイル */
+.moveButton {
+  background: linear-gradient(145deg, #1a1a3a, #0a0a2a) !important;
+  color: #9090ff !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(0, 0, 255, 0.15),
+              0 0 15px rgba(0, 0, 255, 0.2) !important;
+  text-shadow: 0 0 10px rgba(0, 0, 255, 0.5) !important;
+  border-color: rgba(0, 0, 255, 0.3) !important;
+}
+
+.moveButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #2a2a4a, #1a1a3a) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+              inset 0 0 30px rgba(0, 0, 255, 0.2),
+              0 0 25px rgba(0, 0, 255, 0.3) !important;
+  text-shadow: 0 0 15px rgba(0, 0, 255, 0.7) !important;
+}
+
+.moveButton::before {
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 0, 255, 0.1),
+    transparent
+  ) !important;
+}
+
+/* 武器カード用のスタイル */
+.weaponButton {
+  background: linear-gradient(145deg, #3a1a1a, #2a0a0a) !important;
+  color: #ff9090 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(255, 0, 0, 0.15),
+              0 0 15px rgba(255, 0, 0, 0.2) !important;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+  border-color: rgba(255, 0, 0, 0.3) !important;
+}
+
+.weaponButton:hover:not(:disabled) {
+  background: linear-gradient(145deg, #4a2a2a, #3a1a1a) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+              inset 0 0 30px rgba(255, 0, 0, 0.2),
+              0 0 25px rgba(255, 0, 0, 0.3) !important;
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.7) !important;
+}
+
+.weaponButton::before {
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 0, 0, 0.1),
+    transparent
+  ) !important;
 }
 
 .healButton {

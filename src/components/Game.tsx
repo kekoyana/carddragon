@@ -97,8 +97,15 @@ const Game = () => {
   // 攻撃メッセージの生成
   const getAttackMessage = (weaponPower: number, damage: number) => {
     if (!currentMonster) return '';
+    const getWeaponName = (power: number) => {
+      if (power <= 2) return [`ダガー(${power})`, `ブロンズソード(${power})`][power - 1];
+      if (power <= 5) return [`バスタードソード(${power})`, `バトルアクス(${power})`, `ウォーハンマー(${power})`][power - 3];
+      if (power <= 9) return [`ミスリルブレード(${power})`, `フレイムソード(${power})`, `ドラゴンバスター(${power})`, `ルーンブレード(${power})`][power - 6];
+      return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `クリスタルソード(${power})`, `ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
+    };
+
     return weaponPower > 0
-      ? `プレイヤーの${['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][weaponPower - 1]}で攻撃！${currentMonster.name}に${damage}ダメージ！`
+      ? `プレイヤーの${getWeaponName(weaponPower)}で攻撃！${currentMonster.name}に${damage}ダメージ！`
       : `プレイヤーの攻撃！${currentMonster.name}に${damage}ダメージ！`;
   };
 
@@ -188,12 +195,26 @@ const Game = () => {
   };
 
   const drawCard = () => {
-    // 20%の確率で回復カード、10%で武器カード、70%で通常カード
+    // 15%の確率で通常ポーション、5%の確率でポーション+、10%で武器カード、70%で通常カード
     const randomValue = Math.random();
-    if (randomValue < 0.2) {
+    if (randomValue < 0.15) {
       return 'H'; // 回復カード
+    } else if (randomValue < 0.2) {
+      return 'H+'; // 回復カード+
     } else if (randomValue < 0.3) {
-      return { type: 'weapon', power: Math.floor(Math.random() * 5) + 1 }; // 武器カード
+      // 武器カードの抽選
+      const weaponRoll = Math.random();
+      let power;
+      if (weaponRoll < 0.4) {        // 40% - 弱い武器
+        power = Math.floor(Math.random() * 2) + 1;  // 1-2
+      } else if (weaponRoll < 0.7) { // 30% - 中程度の武器
+        power = Math.floor(Math.random() * 3) + 3;  // 3-5
+      } else if (weaponRoll < 0.9) { // 20% - 強い武器
+        power = Math.floor(Math.random() * 4) + 6;  // 6-9
+      } else {                       // 10% - とても強い武器
+        power = Math.floor(Math.random() * 91) + 10; // 10-100
+      }
+      return { type: 'weapon', power }; // 武器カード
     }
     return Math.floor(Math.random() * 6) + 1; // 通常カード
   };
@@ -227,10 +248,10 @@ const Game = () => {
   };
 
   // 回復処理
-  const handleHealing = () => {
-    const healAmount = 3;
+  const handleHealing = (card: string) => {
+    const healAmount = card === 'H+' ? 10 : 3;
     setHp(prev => Math.min(10, prev + healAmount));
-    setBattleMessage('+3回復！');
+    setBattleMessage(`+${healAmount}回復！`);
   };
 
   // 武器カード処理
@@ -279,8 +300,8 @@ const Game = () => {
       processed = handleWeaponCard(card.power);
     } else if (typeof card === 'number') {
       handleMovement(card);
-    } else if (card === 'H') {
-      handleHealing();
+    } else if (card === 'H' || card === 'H+') {
+      handleHealing(card);
     } else {
       processed = false;
     }
@@ -357,14 +378,21 @@ const Game = () => {
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
-                card === 'H' ? styles.healButton : ''
+                (card === 'H' || card === 'H+') ? styles.healButton : ''
               } ${gameOver ? styles.disabledButton : ''} ${
                 isDiscardMode ? styles.discardModeCard : ''
               }`}
             >
               {card === null ? '' : typeof card === 'object' ?
-                ['ナイフ', 'ロングソード', 'アックス', 'ミスリルブレード', 'エクスカリバー'][card.power - 1] :
-                card === 'H' ? 'ポーション' : `${card}進む`}
+                (() => {
+                  const power = card.power;
+                  if (power <= 2) return [`ダガー(${power})`, `ブロンズソード(${power})`][power - 1];
+                  if (power <= 5) return [`バスタードソード(${power})`, `バトルアクス(${power})`, `ウォーハンマー(${power})`][power - 3];
+                  if (power <= 9) return [`ミスリルブレード(${power})`, `フレイムソード(${power})`, `ドラゴンバスター(${power})`, `ルーンブレード(${power})`][power - 6];
+                  return [`デーモンスレイヤー(${power})`, `エクスカリバー(${power})`, `クリスタルソード(${power})`, `ラグナロク(${power})`][Math.min(3, Math.floor((power - 10) / 23))];
+                })() :
+                card === 'H' ? 'ポーション' :
+                card === 'H+' ? 'ポーション+' : `${card}進む`}
             </button>
           ))}
         </div>

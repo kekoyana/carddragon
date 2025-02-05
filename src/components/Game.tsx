@@ -15,6 +15,7 @@ const Game = () => {
     hp,
     attack,
     gameOver,
+    victory,
     inBattle,
     currentMonster,
     battleMessage,
@@ -76,7 +77,7 @@ const Game = () => {
           </div>
           {gameOver && (
             <>
-              {hp <= 0 ? (
+              {!victory ? (
                 <>
                   <p className={styles.gameOverMessage}>ゲームオーバー</p>
                   <p className={styles.gameOverMessage}>HPが0になりました...</p>

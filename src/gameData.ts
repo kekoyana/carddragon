@@ -2,23 +2,23 @@ import { Monster } from './types';
 
 // モンスターデータ
 export const MONSTERS: Monster[] = [
-  { name: 'スライム', hp: 3, attack: 1, defense: 0, exp: 2 },
-  { name: 'ゴブリン', hp: 5, attack: 2, defense: 1, exp: 3 },
-  { name: 'オーク', hp: 8, attack: 3, defense: 2, exp: 5 },
-  { name: 'ワイバーン', hp: 15, attack: 5, defense: 4, exp: 8 },
-  { name: 'コボルド', hp: 4, attack: 2, defense: 0, exp: 2 },
-  { name: 'スケルトン', hp: 6, attack: 3, defense: 1, exp: 4 },
-  { name: 'ゾンビ', hp: 10, attack: 2, defense: 2, exp: 5 },
-  { name: 'ハーピー', hp: 12, attack: 4, defense: 2, exp: 6 },
-  { name: 'ガーゴイル', hp: 14, attack: 4, defense: 3, exp: 7 },
-  { name: 'キメラ', hp: 18, attack: 6, defense: 3, exp: 9 }
+  { name: 'スライム', hp: 3, attack: 1, defense: 0, exp: 3 },    // 経験値増加
+  { name: 'ゴブリン', hp: 5, attack: 2, defense: 1, exp: 4 },    // 経験値増加
+  { name: 'オーク', hp: 8, attack: 3, defense: 2, exp: 6 },
+  { name: 'ワイバーン', hp: 15, attack: 5, defense: 4, exp: 10 },
+  { name: 'コボルド', hp: 4, attack: 2, defense: 0, exp: 3 },    // 経験値増加
+  { name: 'スケルトン', hp: 6, attack: 3, defense: 1, exp: 5 },
+  { name: 'ゾンビ', hp: 10, attack: 2, defense: 2, exp: 6 },
+  { name: 'ハーピー', hp: 12, attack: 4, defense: 2, exp: 8 },
+  { name: 'ガーゴイル', hp: 14, attack: 4, defense: 3, exp: 9 },
+  { name: 'キメラ', hp: 18, attack: 6, defense: 3, exp: 12 }
 ];
 
 // ボスモンスター
 export const BOSS_MONSTER: Monster = {
   name: "ドラゴン",
-  hp: 100,
-  attack: 6,
+  hp: 80,            // HPを調整
+  attack: 5,         // 攻撃力を調整
   defense: 3,
   isBoss: true
 };
@@ -68,6 +68,12 @@ export const INITIAL_STATS = {
   MAX_HP: 10,
   ATTACK: 3,
   LEVEL: 1,
+} as const;
+
+// レベルアップ時のステータス上昇値
+export const LEVEL_UP_STATS = {
+  HP: 3,           // HPの上昇値を3に
+  ATTACK: 2,       // 攻撃力の上昇値を2に
 } as const;
 
 // ゲーム設定値

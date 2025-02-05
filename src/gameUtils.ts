@@ -86,5 +86,7 @@ export const drawCard = (): Card => {
 };
 
 export const getRequiredExp = (currentLevel: number): number => {
-  return currentLevel * 5;
+  // レベル1→2は6exp（弱いモンスター2体）
+  // その後は徐々に上昇（レベル2→3は8exp、レベル3→4は12exp、レベル4→5は18exp）
+  return Math.floor(6 * Math.pow(1.5, currentLevel - 1));
 };

@@ -3,7 +3,8 @@ import { Monster, Card, MapCell } from '../types';
 import { 
   INITIAL_STATS,
   GAME_CONFIG,
-  BOSS_MONSTER
+  BOSS_MONSTER,
+  LEVEL_UP_STATS
 } from '../gameData';
 import {
   getRandomMonster,
@@ -23,6 +24,7 @@ export const useGame = () => {
   const [hp, setHp] = useState<number>(INITIAL_STATS.MAX_HP);
   const [attack, setAttack] = useState<number>(INITIAL_STATS.ATTACK);
   const [gameOver, setGameOver] = useState(false);
+  const [victory, setVictory] = useState(false);
   const [mapData, setMapData] = useState<MapCell[]>(generateMap());
   const [inBattle, setInBattle] = useState(false);
   const [currentMonster, setCurrentMonster] = useState<Monster | null>(null);
@@ -33,11 +35,7 @@ export const useGame = () => {
   const checkGameStatus = () => {
     if (hp <= 0) {
       setGameOver(true);
-      return true;
-    }
-    
-    if (position === GAME_CONFIG.GOAL_POSITION && !inBattle && !currentMonster) {
-      setGameOver(true);
+      setVictory(false);
       return true;
     }
     return false;
@@ -74,14 +72,31 @@ export const useGame = () => {
 
   // レベルアップチェック
   const checkLevelUp = () => {
-    const requiredExp = getRequiredExp(level);
-    if (exp >= requiredExp) {
-      setLevel(prev => prev + 1);
-      setExp(prev => prev - requiredExp);
-      setMaxHp(prev => prev + 2);
-      setHp(prev => prev + 2);
-      setAttack(prev => prev + 1);
-      setBattleMessage(prev => `${prev}\nレベルアップ！ Level ${level} → ${level + 1}`);
+    // 現在の経験値で可能なレベルアップをすべて処理
+    let currentExp = exp;
+    let currentLevel = level;
+    let message = '';
+
+    while (true) {
+      const requiredExp = getRequiredExp(currentLevel);
+      if (currentExp >= requiredExp) {
+        currentLevel++;
+        currentExp -= requiredExp;
+        message += `\nレベルアップ！ Level ${currentLevel - 1} → ${currentLevel}`;
+      } else {
+        break;
+      }
+    }
+
+    // レベルが上がっていた場合、ステータスを更新
+    if (currentLevel > level) {
+      const levelDiff = currentLevel - level;
+      setLevel(currentLevel);
+      setExp(currentExp);
+      setMaxHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
+      setHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
+      setAttack(prev => prev + LEVEL_UP_STATS.ATTACK * levelDiff);
+      setBattleMessage(prev => prev + message);
     }
   };
 
@@ -111,10 +126,19 @@ export const useGame = () => {
     
     if (newMonsterHp <= 0) {
       const monsterExp = currentMonster.exp || 0;
+      
+      // ドラゴンを倒した場合は勝利
+      if (currentMonster.isBoss) {
+        setGameOver(true);
+        setVictory(true);
+        setBattleMessage(`${message}\nドラゴンを倒し、世界に平和が訪れた！`);
+        return;
+      }
+
       if (monsterExp > 0) {
         setExp(prev => prev + monsterExp);
         setBattleMessage(`${message}\n${monsterExp}の経験値を獲得！`);
-        checkLevelUp();
+        setTimeout(checkLevelUp, 0);
       } else {
         setBattleMessage(message);
       }
@@ -139,7 +163,9 @@ export const useGame = () => {
     
     if (newMonsterHp <= 0) {
       processBattleResult(`${attackMessage}\n${currentMonster.name}を倒した！`, newMonsterHp);
-      turnEnd();
+      if (!currentMonster.isBoss) {
+        turnEnd();
+      }
       return;
     }
 
@@ -151,6 +177,7 @@ export const useGame = () => {
     
     if (newHp <= 0) {
       setGameOver(true);
+      setVictory(false);
       return;
     }
     
@@ -261,6 +288,7 @@ export const useGame = () => {
     setHp(INITIAL_STATS.MAX_HP);
     setAttack(INITIAL_STATS.ATTACK);
     setGameOver(false);
+    setVictory(false);
     setMapData(generateMap());
     drawInitialCards();
   };
@@ -285,6 +313,7 @@ export const useGame = () => {
     hp,
     attack,
     gameOver,
+    victory,
     mapData,
     inBattle,
     currentMonster,

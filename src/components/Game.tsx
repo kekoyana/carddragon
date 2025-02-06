@@ -48,6 +48,14 @@ const Game = () => {
     </div>
   );
 
+  const getCardClass = (card: Card) => {
+    if (card === null) return '';
+    if (card === 'H') return styles.healButton;
+    if (card === 'H+') return styles.healPlus;
+    if (typeof card === 'object') return styles.weaponButton;
+    return styles.moveButton;
+  };
+
   return (
     <div className={styles.game}>
       <div className={styles.status}>
@@ -89,12 +97,9 @@ const Game = () => {
               key={i}
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
-              className={`${styles.cardButton} ${
-                card === 'H' ? styles.healButton :
-                card === 'H+' ? styles.healPlus :
-                typeof card === 'object' ? styles.weaponButton :
-                card !== null ? styles.moveButton : ''
-              } ${isDiscardMode && card !== null ? styles.discardModeCard : ''}`}
+              className={`${styles.cardButton} ${getCardClass(card)} ${
+                isDiscardMode && card !== null ? styles.discardModeCard : ''
+              }`}
             >
               {renderCard(card)}
             </button>

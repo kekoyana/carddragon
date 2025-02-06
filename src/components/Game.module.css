@@ -141,8 +141,8 @@
   position: relative;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #2c3e50, #1a1a1a);
-  color: white;
+  background: #000000;
+  color: rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -165,8 +165,8 @@
   right: 0;
   height: 100%;
   background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0.1), 
-    rgba(255, 255, 255, 0.05) 20%, 
+    rgba(255, 255, 255, 0.05), 
+    rgba(255, 255, 255, 0.02) 20%, 
     transparent 50%
   );
   transform: translateX(-100%);
@@ -189,6 +189,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .cardButton span::first-letter {
@@ -196,19 +197,35 @@
 }
 
 .healButton {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  background: linear-gradient(135deg, #1e8449, #145a32);
+}
+
+.healButton span {
+  color: white;
 }
 
 .healPlus {
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  background: linear-gradient(135deg, #6c3483, #4a235a);
+}
+
+.healPlus span {
+  color: white;
 }
 
 .moveButton {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: linear-gradient(135deg, #2874a6, #1b4f72);
+}
+
+.moveButton span {
+  color: white;
 }
 
 .weaponButton {
-  background: linear-gradient(135deg, #e67e22, #d35400);
+  background: linear-gradient(135deg, #c0392b, #922b21);
+}
+
+.weaponButton span {
+  color: white;
 }
 
 .disabledButton {
@@ -231,7 +248,7 @@
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: linear-gradient(135deg, #2874a6, #1b4f72);
   color: white;
   cursor: pointer;
   font-size: 14px;
@@ -241,7 +258,7 @@
 }
 
 .battleActionButton:not(:disabled):hover {
-  background: linear-gradient(135deg, #2980b9, #3498db);
+  background: linear-gradient(135deg, #1b4f72, #2874a6);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
@@ -256,7 +273,7 @@
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  background: linear-gradient(135deg, #922b21, #641e16);
   color: white;
   cursor: pointer;
   font-size: 14px;
@@ -266,7 +283,7 @@
 }
 
 .cancelButton {
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  background: linear-gradient(135deg, #616a6b, #424949);
 }
 
 .discardActionButton:not(:disabled):hover {

@@ -1,6 +1,6 @@
 import styles from './Game.module.css';
 import { useGame } from '../hooks/useGame';
-import { Card } from '../types';
+import { Card, MapCell } from '../types';
 import { GAME_CONFIG } from '../gameData';
 import { getWeaponName } from '../gameUtils';
 
@@ -32,74 +32,57 @@ const Game = () => {
   const renderCard = (card: Card) => {
     if (card === null) return '';
     if (typeof card === 'object') {
-      return `⚔️ ${getWeaponName(card.power)}`;
+      return <span>⚔️ {getWeaponName(card.power)}</span>;
     }
-    if (card === 'H') return '🧪 ポーション';
-    if (card === 'H+') return '🧪 ポーション+';
-    return `👣 ${card}進む`;
+    if (card === 'H') return <span>🧪 ポーション</span>;
+    if (card === 'H+') return <span>🧪 ポーション+</span>;
+    return <span>👣 {card}マス進む</span>;
   };
+
+  const renderCell = (cell: MapCell, isCurrent: boolean) => (
+    <div 
+      className={`${styles.cell} ${styles[cell.color]} ${isCurrent ? styles.current : ''}`}
+      data-event={cell.event.type}
+    >
+      {cell.position}
+    </div>
+  );
 
   return (
     <div className={styles.game}>
-      <div className={styles.leftPanel}>
-        <div className={styles.status}>
+      <div className={styles.status}>
+        <div className={styles.statusInfo}>
           <p>現在位置: {position}マス目 / ゴール: {GAME_CONFIG.GOAL_POSITION}マス目</p>
           <p>Level: {level} (次のレベルまで: {getRequiredExp(level) - exp}exp)</p>
           <p>HP: {hp}/{maxHp}</p>
           <p>攻撃力: {attack}</p>
           <p>ターン数: {turns}</p>
-          <div className={styles.nextCells}>
-            <div className={styles.cellContainer}>
-              {getNextCells().map((cell, i) => (
-                <div 
-                  key={i}
-                  className={`${styles.cell} ${
-                    cell.hasMonster ? styles.monsterCell : ''
-                  } ${i === 0 ? styles.currentCell : ''}`}
-                >
-                  {cell.position}
-                </div>
-              ))}
-            </div>
-          </div>
+        </div>
+
+        <div className={styles.monsterArea}>
           {currentMonster && (
             <div className={styles.monsterStatus}>
-              <p>戦闘中のモンスター: {currentMonster.name} (HP: {currentMonster.hp})</p>
+              戦闘中のモンスター: {currentMonster.name} (HP: {currentMonster.hp})
             </div>
           )}
         </div>
 
-        <div className={styles.message}>
-          <div className={styles.battleMessage}>
-            {battleMessage.split('\n').map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
+        <div className={styles.nextCells}>
+          <div className={styles.cellContainer}>
+            {getNextCells().map((cell, i) => renderCell(cell, i === 0))}
           </div>
-          {gameOver && (
-            <>
-              {!victory ? (
-                <>
-                  <p className={styles.gameOverMessage}>ゲームオーバー</p>
-                  <p className={styles.gameOverMessage}>HPが0になりました...</p>
-                </>
-              ) : (
-                <>
-                  <p className={styles.gameOverMessage}>ゲームクリア！</p>
-                  <p className={styles.gameOverMessage}>ゴールまで{turns}ターンかかりました！</p>
-                </>
-              )}
-              <button 
-                className={styles.cardButton}
-                onClick={startGame}
-              >
-                もう一度遊ぶ
-              </button>
-            </>
-          )}
         </div>
       </div>
 
-      <div className={`${styles.action} ${isDiscardMode ? styles.discardMode : ''}`}>
+      <div className={styles.message}>
+        <div className={styles.battleMessage}>
+          {battleMessage.split('\n').map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.action}>
         <div className={styles.cards}>
           {cards.map((card, i) => (
             <button
@@ -107,18 +90,17 @@ const Game = () => {
               onClick={() => playCard(card, i)}
               disabled={gameOver || card === null}
               className={`${styles.cardButton} ${
-                (card === 'H' || card === 'H+') ? styles.healButton :
-                typeof card === 'number' ? styles.moveButton :
-                typeof card === 'object' ? styles.weaponButton : ''
-              } ${gameOver ? styles.disabledButton : ''} ${
-                isDiscardMode ? styles.discardModeCard : ''
-              }`}
+                card === 'H' ? styles.healButton :
+                card === 'H+' ? styles.healPlus :
+                typeof card === 'object' ? styles.weaponButton :
+                card !== null ? styles.moveButton : ''
+              } ${isDiscardMode && card !== null ? styles.discardModeCard : ''}`}
             >
               {renderCard(card)}
             </button>
           ))}
         </div>
-        
+
         {inBattle && currentMonster && !isDiscardMode && (
           <div className={styles.battleActions}>
             <button
@@ -148,6 +130,28 @@ const Game = () => {
           </button>
         </div>
       </div>
+
+      {gameOver && (
+        <div className={styles.gameOver}>
+          {victory ? (
+            <>
+              <p>ゲームクリア！</p>
+              <p>ゴールまで{turns}ターンかかりました！</p>
+            </>
+          ) : (
+            <>
+              <p>ゲームオーバー</p>
+              <p>HPが0になりました...</p>
+            </>
+          )}
+          <button 
+            className={styles.button}
+            onClick={startGame}
+          >
+            もう一度遊ぶ
+          </button>
+        </div>
+      )}
     </div>
   );
 };

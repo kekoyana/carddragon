@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Monster, Card, MapCell } from '../types';
+import { Monster, Card, MapCell, CellEvent } from '../types';
 import { 
   INITIAL_STATS,
   GAME_CONFIG,
   BOSS_MONSTER,
-  LEVEL_UP_STATS
+  LEVEL_UP_STATS,
+  CELL_EVENTS
 } from '../gameData';
 import {
   getRandomMonster,
@@ -98,6 +99,56 @@ export const useGame = () => {
       setAttack(prev => prev + LEVEL_UP_STATS.ATTACK * levelDiff);
       setBattleMessage(prev => prev + message);
     }
+  };
+
+  // イベント処理
+  const handleCellEvent = (event: CellEvent) => {
+    let message = '';
+    if (!event.type) return message;
+
+    switch (event.type) {
+      case 'inn': {
+        const healAmount = event.value || CELL_EVENTS.INN.HEAL_AMOUNT;
+        setHp(prev => Math.min(maxHp, prev + healAmount));
+        message = `宿屋で休んで${healAmount}回復した！`;
+        break;
+      }
+      case 'trap': {
+        const damage = event.value || CELL_EVENTS.TRAP.DAMAGE;
+        setHp(prev => Math.max(0, prev - damage));
+        message = `落とし穴に落ちて${damage}ダメージを受けた！`;
+        break;
+      }
+      case 'treasure': {
+        const randomCard = drawOneCard();
+        message = typeof randomCard === 'object' && randomCard?.type === 'weapon'
+          ? `宝箱を見つけた！${getWeaponName(randomCard.power)}を手に入れた！`
+          : '宝箱を見つけた！アイテムを手に入れた！';
+        break;
+      }
+      case 'carriage': {
+        const forwardSteps = event.value || CELL_EVENTS.CARRIAGE.MOVE_FORWARD;
+        setPosition(prev => Math.min(GAME_CONFIG.GOAL_POSITION, prev + forwardSteps));
+        message = `馬車に乗って${forwardSteps}マス進んだ！`;
+        break;
+      }
+      case 'detour': {
+        const backSteps = event.value || CELL_EVENTS.DETOUR.MOVE_BACK;
+        setPosition(prev => Math.max(0, prev - backSteps));
+        message = `回り道で${backSteps}マス戻った...`;
+        break;
+      }
+      case 'village': {
+        const expGain = event.value || CELL_EVENTS.VILLAGE.EXP_GAIN;
+        setExp(prev => prev + expGain);
+        setTimeout(checkLevelUp, 0);
+        message = `村人から歓迎され${expGain}の経験値を得た！`;
+        break;
+      }
+      case 'monster':
+        break;
+    }
+    return message;
   };
 
   // ダメージ計算
@@ -197,11 +248,16 @@ export const useGame = () => {
     }
 
     const landedCell = mapData[newPosition];
-    if (landedCell?.hasMonster && newPosition < GAME_CONFIG.GOAL_POSITION) {
+    const eventMessage = handleCellEvent(landedCell.event);
+    if (eventMessage) {
+      setBattleMessage(eventMessage);
+    }
+
+    if (landedCell?.event.type === 'monster' && newPosition < GAME_CONFIG.GOAL_POSITION) {
       const monster = getRandomMonster();
       setCurrentMonster(monster);
       setInBattle(true);
-      setBattleMessage(`${monster.name}が現れた！`);
+      setBattleMessage(eventMessage ? `${eventMessage}\n${monster.name}が現れた！` : `${monster.name}が現れた！`);
     }
   };
 

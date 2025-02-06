@@ -1,4 +1,4 @@
-import { Monster } from './types';
+import { Monster, CellColor } from './types';
 
 // モンスターデータ
 export const MONSTERS: Monster[] = [
@@ -83,5 +83,39 @@ export const GAME_CONFIG = {
   HEAL_AMOUNT: 3,
   HEAL_PLUS_AMOUNT: 10,
   RUNAWAY_DISTANCE: 10,
-  MONSTER_SPAWN_RATE: 0.3,
+  MONSTER_SPAWN_RATE: 0.4,    // モンスター出現率を上昇
+} as const;
+
+// マスの色ごとの確率設定
+export const CELL_COLOR_PROBABILITY = {
+  BLUE: 0.2,    // 青マス（良いイベント）を減少
+  RED: 0.5,     // 赤マス（悪いイベント）を増加
+  NORMAL: 0.3   // 通常マス
+} as const;
+
+// マスのイベント設定
+export const CELL_EVENTS = {
+  INN: {
+    HEAL_AMOUNT: 5,
+    PROBABILITY: 0.2
+  },
+  TRAP: {
+    DAMAGE: 2,
+    PROBABILITY: 0.25        // 落とし穴の確率を上昇
+  },
+  TREASURE: {
+    PROBABILITY: 0.15
+  },
+  CARRIAGE: {
+    MOVE_FORWARD: 3,
+    PROBABILITY: 0.15
+  },
+  DETOUR: {
+    MOVE_BACK: 2,
+    PROBABILITY: 0.15
+  },
+  VILLAGE: {
+    EXP_GAIN: 2,
+    PROBABILITY: 0.1
+  }
 } as const;

@@ -122,8 +122,9 @@
 .action {
   width: 100%;
   display: grid;
-  grid-template-rows: 140px auto auto;
+  grid-template-rows: 140px 40px;
   gap: 15px;
+  position: relative;
 }
 
 .cards {
@@ -135,6 +136,22 @@
   background: rgba(0, 0, 0, 0.7);
   border-radius: 5px;
   height: 140px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.battleActions {
+  display: flex;
+  gap: 10px;
+}
+
+.discardAction {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .cardButton {
@@ -237,18 +254,11 @@
   border: 2px solid #ff3b30;
 }
 
-.battleActions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  height: 40px;
-}
-
 .battleActionButton {
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
-  background: linear-gradient(135deg, #2874a6, #1b4f72);
+  background: linear-gradient(135deg, #c0392b, #922b21);
   color: white;
   cursor: pointer;
   font-size: 14px;
@@ -258,15 +268,9 @@
 }
 
 .battleActionButton:not(:disabled):hover {
-  background: linear-gradient(135deg, #1b4f72, #2874a6);
+  background: linear-gradient(135deg, #922b21, #c0392b);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.discardAction {
-  display: flex;
-  justify-content: center;
-  height: 40px;
 }
 
 .discardActionButton {

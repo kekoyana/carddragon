@@ -106,33 +106,37 @@ const Game = () => {
           ))}
         </div>
 
-        {inBattle && currentMonster && !isDiscardMode && (
+        <div className={styles.actionButtons}>
           <div className={styles.battleActions}>
+            {inBattle && currentMonster && !isDiscardMode && (
+              <>
+                <button
+                  className={styles.battleActionButton}
+                  onClick={() => attackMonster()}
+                  disabled={gameOver}
+                >
+                  攻撃
+                </button>
+                <button
+                  className={styles.battleActionButton}
+                  onClick={runAway}
+                  disabled={gameOver}
+                >
+                  逃げる
+                </button>
+              </>
+            )}
+          </div>
+
+          <div className={styles.discardAction}>
             <button
-              className={styles.battleActionButton}
-              onClick={() => attackMonster()}
+              className={`${styles.discardActionButton} ${isDiscardMode ? styles.cancelButton : ''}`}
+              onClick={() => setIsDiscardMode(!isDiscardMode)}
               disabled={gameOver}
             >
-              攻撃
-            </button>
-            <button
-              className={styles.battleActionButton}
-              onClick={runAway}
-              disabled={gameOver}
-            >
-              逃げる
+              {isDiscardMode ? 'キャンセル' : 'カードを捨てる'}
             </button>
           </div>
-        )}
-
-        <div className={styles.discardAction}>
-          <button
-            className={`${styles.discardActionButton} ${isDiscardMode ? styles.cancelButton : ''}`}
-            onClick={() => setIsDiscardMode(!isDiscardMode)}
-            disabled={gameOver}
-          >
-            {isDiscardMode ? 'キャンセル' : 'カードを捨てる'}
-          </button>
         </div>
       </div>
 

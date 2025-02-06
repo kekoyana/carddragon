@@ -10,7 +10,7 @@
   padding: 1rem;
   display: flex;
   gap: 1rem;
-  filter: brightness(0.7) saturate(0.8);
+  filter: brightness(0.85) saturate(0.8);
   position: relative;
   font-family: 'Crimson Text', serif;
 }
@@ -36,23 +36,23 @@
 }
 
 .status {
-  background: rgba(20, 20, 25, 0.95);
+  background: rgba(20, 20, 25, 0.98);
   border-radius: 10px;
   padding: 1rem;
   height: 320px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8),
               inset 0 0 30px rgba(83, 0, 0, 0.3);
-  color: #e0e0e0;
+  color: #ffffff;
   border: 1px solid rgba(150, 0, 0, 0.3);
 }
 
 .message {
-  background: rgba(15, 15, 20, 0.95);
+  background: rgba(15, 15, 20, 0.98);
   border-radius: 10px;
   padding: 1rem;
   overflow-y: auto;
   height: 240px;
-  color: #e0e0e0;
+  color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8),
               inset 0 0 30px rgba(83, 0, 0, 0.3);
   border: 1px solid rgba(150, 0, 0, 0.3);
@@ -74,7 +74,7 @@
 .status p {
   font-size: 1.2rem;
   margin: 0.5rem 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .status .nextCells {
@@ -99,7 +99,7 @@
   justify-content: center;
   border-radius: 6px;
   background: #2a2a30;
-  color: #e0e0e0;
+  color: #ffffff;
   font-size: 0.9rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -233,8 +233,8 @@
 }
 
 .battleMessage {
-  color: #ff9999;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  color: #ffc2c2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   font-size: 1.1rem;
   line-height: 1.6;
 }

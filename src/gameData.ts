@@ -1,4 +1,4 @@
-import { Monster, CellColor } from './types';
+import { Monster } from './types';
 
 // モンスターデータ
 export const MONSTERS: Monster[] = [

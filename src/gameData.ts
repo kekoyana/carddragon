@@ -80,8 +80,8 @@ export const LEVEL_UP_STATS = {
 export const GAME_CONFIG = {
   GOAL_POSITION: 50,
   INITIAL_HAND_SIZE: 8,
-  HEAL_AMOUNT: 3,
-  HEAL_PLUS_AMOUNT: 10,
+  HEAL_AMOUNT: 5,
+  HEAL_PLUS_AMOUNT: 50,
   RUNAWAY_DISTANCE: 10,
   MONSTER_SPAWN_RATE: 0.4,    // モンスター出現率を上昇
 } as const;

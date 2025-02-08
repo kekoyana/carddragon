@@ -97,7 +97,16 @@ const Game = () => {
         <div className={styles.monsterArea}>
           {currentMonster && (
             <div className={styles.monsterStatus}>
-              戦闘中のモンスター: {currentMonster.name} (HP: {currentMonster.hp})
+              <div className={styles.monsterName}>
+                戦闘中のモンスター: {currentMonster.name}
+              </div>
+              <div className={styles.monsterHpBar}>
+                <div
+                  className={styles.monsterHpFill}
+                  style={{ width: `${(currentMonster.hp / (currentMonster.isBoss ? 80 : 18)) * 100}%` }}
+                />
+                <span>HP: {currentMonster.hp}</span>
+              </div>
             </div>
           )}
         </div>

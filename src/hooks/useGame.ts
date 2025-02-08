@@ -114,7 +114,7 @@ export const useGame = () => {
 
     switch (event.type) {
       case 'inn': {
-        const healAmount = event.value ?? 3;
+        const healAmount = maxHp; // Set healAmount to maxHp for full restoration
         setHp(prev => Math.min(maxHp, prev + healAmount));
         message = `宿屋で休んで${healAmount}回復した！`;
         break;
@@ -348,6 +348,8 @@ export const useGame = () => {
     setGameOver(false);
     setVictory(false);
     setMapData(generateMap());
+    setInBattle(false);
+    setIsDiscardMode(false);
     drawInitialCards();
   };
 

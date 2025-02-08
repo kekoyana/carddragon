@@ -145,7 +145,7 @@ export const useGame = () => {
         break;
       }
       case 'village': {
-        const expGain = event.value ?? 2;
+        const expGain = event.value ?? 5; // 経験値を5に設定
         const expMessage = `村人から歓迎され${expGain}の経験値を得た！`;
         addExp(expGain, expMessage);
         message = '';

@@ -93,29 +93,85 @@ export const CELL_COLOR_PROBABILITY = {
   NORMAL: 0.3   // 通常マス
 } as const;
 
-// マスのイベント設定
+// マス色ごとのイベント設定
 export const CELL_EVENTS = {
-  INN: {
-    HEAL_AMOUNT: 5,
-    PROBABILITY: 0.2
+  blue: {
+    GOOD: {  // 良いイベント
+      INN: {
+        HEAL_AMOUNT: 5,
+        PROBABILITY: 0.4
+      },
+      TREASURE: {
+        PROBABILITY: 0.3
+      },
+      CARRIAGE: {
+        MOVE_FORWARD: 3,
+        PROBABILITY: 0.2
+      },
+      VILLAGE: {
+        EXP_GAIN: 2,
+        PROBABILITY: 0.1
+      }
+    },
+    BAD: {   // 悪いイベント
+      TRAP: {
+        DAMAGE: 2,
+        PROBABILITY: 0.05
+      },
+      DETOUR: {
+        MOVE_BACK: 2,
+        PROBABILITY: 0.05
+      }
+    }
   },
-  TRAP: {
-    DAMAGE: 2,
-    PROBABILITY: 0.03        // 落とし穴の確率を低下
+  red: {
+    GOOD: {  // 良いイベント
+      INN: {
+        HEAL_AMOUNT: 5,
+        PROBABILITY: 0.05
+      },
+      TREASURE: {
+        PROBABILITY: 0.05
+      }
+    },
+    BAD: {   // 悪いイベント
+      TRAP: {
+        DAMAGE: 2,
+        PROBABILITY: 0.4
+      },
+      DETOUR: {
+        MOVE_BACK: 2,
+        PROBABILITY: 0.3
+      }
+    }
   },
-  TREASURE: {
-    PROBABILITY: 0.15
-  },
-  CARRIAGE: {
-    MOVE_FORWARD: 3,
-    PROBABILITY: 0.05
-  },
-  DETOUR: {
-    MOVE_BACK: 2,
-    PROBABILITY: 0.03        // 戻るマスの確率を低下
-  },
-  VILLAGE: {
-    EXP_GAIN: 2,
-    PROBABILITY: 0.1
+  normal: {
+    GOOD: {  // 良いイベント
+      INN: {
+        HEAL_AMOUNT: 5,
+        PROBABILITY: 0.2
+      },
+      TREASURE: {
+        PROBABILITY: 0.15
+      },
+      CARRIAGE: {
+        MOVE_FORWARD: 3,
+        PROBABILITY: 0.1
+      },
+      VILLAGE: {
+        EXP_GAIN: 2,
+        PROBABILITY: 0.1
+      }
+    },
+    BAD: {   // 悪いイベント
+      TRAP: {
+        DAMAGE: 2,
+        PROBABILITY: 0.15
+      },
+      DETOUR: {
+        MOVE_BACK: 2,
+        PROBABILITY: 0.1
+      }
+    }
   }
 } as const;

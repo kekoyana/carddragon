@@ -40,9 +40,8 @@ const Game = () => {
   };
 
   const renderCell = (cell: MapCell, isCurrent: boolean) => (
-    <div 
+    <div
       className={`${styles.cell} ${styles[cell.color]} ${isCurrent ? styles.current : ''}`}
-      data-event={cell.event.type}
     >
       {cell.position}
     </div>

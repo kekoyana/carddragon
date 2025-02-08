@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Monster, Card, MapCell, CellEvent } from '../types';
-import { 
+import { Monster, Card, MapCell, CellEventResult } from '../types';
+import {
   INITIAL_STATS,
   GAME_CONFIG,
   BOSS_MONSTER,
-  LEVEL_UP_STATS,
-  CELL_EVENTS
+  LEVEL_UP_STATS
 } from '../gameData';
 import {
   getRandomMonster,
   generateMap,
   drawCard,
   getRequiredExp,
-  getWeaponName
+  getWeaponName,
+  getRandomEventForCell
 } from '../gameUtils';
 
 export const useGame = () => {
@@ -105,19 +105,22 @@ export const useGame = () => {
   };
 
   // イベント処理
-  const handleCellEvent = (event: CellEvent) => {
+  const handleCellEvent = (position: number): string => {
+    const cell = mapData[position];
+    const event: CellEventResult = getRandomEventForCell(cell.color);
     let message = '';
+
     if (!event.type) return message;
 
     switch (event.type) {
       case 'inn': {
-        const healAmount = event.value || CELL_EVENTS.INN.HEAL_AMOUNT;
+        const healAmount = event.value ?? 3;
         setHp(prev => Math.min(maxHp, prev + healAmount));
         message = `宿屋で休んで${healAmount}回復した！`;
         break;
       }
       case 'trap': {
-        const damage = event.value || CELL_EVENTS.TRAP.DAMAGE;
+        const damage = event.value ?? 2;
         setHp(prev => Math.max(0, prev - damage));
         message = `落とし穴に落ちて${damage}ダメージを受けた！`;
         break;
@@ -130,26 +133,31 @@ export const useGame = () => {
         break;
       }
       case 'carriage': {
-        const forwardSteps = event.value || CELL_EVENTS.CARRIAGE.MOVE_FORWARD;
-        setPosition(prev => Math.min(GAME_CONFIG.GOAL_POSITION, prev + forwardSteps));
-        message = `馬車に乗って${forwardSteps}マス進んだ！`;
+        const steps = event.value ?? 3;
+        setPosition(prev => Math.min(GAME_CONFIG.GOAL_POSITION, prev + steps));
+        message = `馬車に乗って${steps}マス進んだ！`;
         break;
       }
       case 'detour': {
-        const backSteps = event.value || CELL_EVENTS.DETOUR.MOVE_BACK;
+        const backSteps = event.value ?? 2;
         setPosition(prev => Math.max(0, prev - backSteps));
         message = `回り道で${backSteps}マス戻った...`;
         break;
       }
       case 'village': {
-        const expGain = event.value || CELL_EVENTS.VILLAGE.EXP_GAIN;
+        const expGain = event.value ?? 2;
         const expMessage = `村人から歓迎され${expGain}の経験値を得た！`;
         addExp(expGain, expMessage);
         message = '';
         break;
       }
-      case 'monster':
+      case 'monster': {
+        const monster = getRandomMonster();
+        setCurrentMonster(monster);
+        setInBattle(true);
+        message = `${monster.name}が現れた！`;
         break;
+      }
     }
     return message;
   };
@@ -249,17 +257,9 @@ export const useGame = () => {
       return;
     }
 
-    const landedCell = mapData[newPosition];
-    const eventMessage = handleCellEvent(landedCell.event);
+    const eventMessage = handleCellEvent(newPosition);
     if (eventMessage) {
       setBattleMessage(eventMessage);
-    }
-
-    if (landedCell?.event.type === 'monster' && newPosition < GAME_CONFIG.GOAL_POSITION) {
-      const monster = getRandomMonster();
-      setCurrentMonster(monster);
-      setInBattle(true);
-      setBattleMessage(eventMessage ? `${eventMessage}\n${monster.name}が現れた！` : `${monster.name}が現れた！`);
     }
   };
 

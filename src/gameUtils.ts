@@ -1,4 +1,4 @@
-import { Monster, Card, MapCell, CellColor, CellEvent } from './types';
+import { Monster, Card, MapCell, CellColor, CellEventResult } from './types';
 import { 
   MONSTERS,
   GAME_CONFIG,
@@ -22,77 +22,42 @@ const getRandomCellColor = (): CellColor => {
   return 'normal';
 };
 
-const getRandomEvent = (color: CellColor): CellEvent => {
+export const getRandomEventForCell = (color: CellColor): CellEventResult => {
   const random = Math.random();
-  let probabilitySum = 0;
+  const events = CELL_EVENTS[color];
+  
+  // イベントタイプの抽選（良いイベントか悪いイベントか）
+  const isGoodEvent = random < (color === 'blue' ? 0.8 : color === 'red' ? 0.2 : 0.5);
+  const eventCategory = isGoodEvent ? 'GOOD' : 'BAD';
+  const eventList = events[eventCategory];
 
-  // 青マスの場合は良いイベントの確率を上げる
-  if (color === 'blue') {
-    // 宿屋
-    probabilitySum += CELL_EVENTS.INN.PROBABILITY * 1.5;
-    if (random < probabilitySum) {
-      return { type: 'inn', value: CELL_EVENTS.INN.HEAL_AMOUNT };
-    }
+  // イベントの抽選
+  let currentProb = 0;
+  const eventRoll = Math.random();
 
-    // 宝箱
-    probabilitySum += CELL_EVENTS.TREASURE.PROBABILITY * 1.5;
-    if (random < probabilitySum) {
-      return { type: 'treasure' };
-    }
-
-    // 村人
-    probabilitySum += CELL_EVENTS.VILLAGE.PROBABILITY * 1.5;
-    if (random < probabilitySum) {
-      return { type: 'village', value: CELL_EVENTS.VILLAGE.EXP_GAIN };
-    }
-
-    // 馬車
-    if (random < probabilitySum + CELL_EVENTS.CARRIAGE.PROBABILITY * 1.5) {
-      return { type: 'carriage', value: CELL_EVENTS.CARRIAGE.MOVE_FORWARD };
+  for (const [eventType, eventData] of Object.entries(eventList)) {
+    currentProb += eventData.PROBABILITY;
+    if (eventRoll < currentProb) {
+      switch (eventType) {
+        case 'INN':
+          return { type: 'inn', value: eventData.HEAL_AMOUNT };
+        case 'TRAP':
+          return { type: 'trap', value: eventData.DAMAGE };
+        case 'TREASURE':
+          return { type: 'treasure' };
+        case 'CARRIAGE':
+          return { type: 'carriage', value: eventData.MOVE_FORWARD };
+        case 'DETOUR':
+          return { type: 'detour', value: eventData.MOVE_BACK };
+        case 'VILLAGE':
+          return { type: 'village', value: eventData.EXP_GAIN };
+      }
     }
   }
-  // 赤マスの場合は悪いイベントの確率を上げる
-  else if (color === 'red') {
-    // 落とし穴
-    probabilitySum += CELL_EVENTS.TRAP.PROBABILITY * 1.5;
-    if (random < probabilitySum) {
-      return { type: 'trap', value: CELL_EVENTS.TRAP.DAMAGE };
-    }
 
-    // 回り道
-    probabilitySum += CELL_EVENTS.DETOUR.PROBABILITY * 1.5;
-    if (random < probabilitySum) {
-      return { type: 'detour', value: CELL_EVENTS.DETOUR.MOVE_BACK };
-    }
-
-    // モンスター
-    if (random < probabilitySum + GAME_CONFIG.MONSTER_SPAWN_RATE * 1.5) {
-      return { type: 'monster' };
-    }
-  }
-  // 通常マスの場合は標準の確率でイベントを設定
-  else {
-    if (random < CELL_EVENTS.INN.PROBABILITY) {
-      return { type: 'inn', value: CELL_EVENTS.INN.HEAL_AMOUNT };
-    }
-    if (random < probabilitySum + CELL_EVENTS.TRAP.PROBABILITY) {
-      return { type: 'trap', value: CELL_EVENTS.TRAP.DAMAGE };
-    }
-    if (random < probabilitySum + CELL_EVENTS.TREASURE.PROBABILITY) {
-      return { type: 'treasure' };
-    }
-    if (random < probabilitySum + CELL_EVENTS.CARRIAGE.PROBABILITY) {
-      return { type: 'carriage', value: CELL_EVENTS.CARRIAGE.MOVE_FORWARD };
-    }
-    if (random < probabilitySum + CELL_EVENTS.DETOUR.PROBABILITY) {
-      return { type: 'detour', value: CELL_EVENTS.DETOUR.MOVE_BACK };
-    }
-    if (random < probabilitySum + CELL_EVENTS.VILLAGE.PROBABILITY) {
-      return { type: 'village', value: CELL_EVENTS.VILLAGE.EXP_GAIN };
-    }
-    if (random < probabilitySum + GAME_CONFIG.MONSTER_SPAWN_RATE) {
-      return { type: 'monster' };
-    }
+  // モンスター出現判定
+  if (Math.random() < GAME_CONFIG.MONSTER_SPAWN_RATE * (color === 'red' ? 1.5 : 1)) {
+    return { type: 'monster' };
   }
 
   return { type: null };
@@ -101,13 +66,9 @@ const getRandomEvent = (color: CellColor): CellEvent => {
 export const generateMap = (): MapCell[] => {
   const map = [];
   for (let i = 0; i <= GAME_CONFIG.GOAL_POSITION; i++) {
-    const color = getRandomCellColor();
-    const event = getRandomEvent(color);
     map.push({
       position: i,
-      hasMonster: event.type === 'monster',
-      color,
-      event
+      color: getRandomCellColor()
     });
   }
   return map;

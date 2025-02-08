@@ -60,11 +60,38 @@ const Game = () => {
     <div className={styles.game}>
       <div className={styles.status}>
         <div className={styles.statusInfo}>
-          <p>現在位置: {position}マス目 / ゴール: {GAME_CONFIG.GOAL_POSITION}マス目</p>
-          <p>Level: {level} (次のレベルまで: {getRequiredExp(level) - exp}exp)</p>
-          <p>HP: {hp}/{maxHp}</p>
-          <p>攻撃力: {attack}</p>
-          <p>ターン数: {turns}</p>
+          <div>
+            <p>現在位置</p>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${(position / GAME_CONFIG.GOAL_POSITION) * 100}%` }}
+              />
+              <span>{position}マス / {GAME_CONFIG.GOAL_POSITION}マス</span>
+            </div>
+          </div>
+          <div>
+            <p>Level: {level}</p>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${(exp / getRequiredExp(level)) * 100}%` }}
+              />
+              <span>EXP: {exp}/{getRequiredExp(level)}</span>
+            </div>
+          </div>
+          <div>
+            <p>HP</p>
+            <div className={`${styles.progressBar} ${styles.hpBar}`}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${(hp / maxHp) * 100}%` }}
+              />
+              <span>{hp}/{maxHp}</span>
+            </div>
+            <p className={styles.attack}>攻撃力: {attack}</p>
+            <p className={styles.turns}>ターン: {turns}</p>
+          </div>
         </div>
 
         <div className={styles.monsterArea}>

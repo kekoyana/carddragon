@@ -71,32 +71,35 @@ export const useGame = () => {
     drawOneCard();
   };
 
-  // レベルアップチェック
-  const checkLevelUp = () => {
-    // 現在の経験値で可能なレベルアップをすべて処理
-    let currentExp = exp;
+  // 経験値を加算してレベルアップをチェックする関数
+  const addExp = (amount: number, initialMessage?: string) => {
+    let newExp = exp + amount;
     let currentLevel = level;
-    let message = '';
+    let message = initialMessage || '';
 
-    while (true) {
+    // レベルアップ可能な限り繰り返す
+    while (newExp >= getRequiredExp(currentLevel)) {
+      const nextLevel = currentLevel + 1;
       const requiredExp = getRequiredExp(currentLevel);
-      if (currentExp >= requiredExp) {
-        currentLevel++;
-        currentExp -= requiredExp;
-        message += `\nレベルアップ！ Level ${currentLevel - 1} → ${currentLevel}`;
-      } else {
-        break;
-      }
+      newExp -= requiredExp;
+      currentLevel = nextLevel;
+      message += `\nレベルアップ！ Level ${currentLevel - 1} → ${currentLevel}`;
     }
 
-    // レベルが上がっていた場合、ステータスを更新
+    // レベルが上がっている場合はステータスを更新
     if (currentLevel > level) {
       const levelDiff = currentLevel - level;
       setLevel(currentLevel);
-      setExp(currentExp);
       setMaxHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
       setHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
       setAttack(prev => prev + LEVEL_UP_STATS.ATTACK * levelDiff);
+    }
+
+    // 経験値を設定
+    setExp(newExp);
+
+    // メッセージを設定（初期メッセージがある場合は、その後にレベルアップメッセージを追加）
+    if (message) {
       setBattleMessage(prev => prev + message);
     }
   };
@@ -140,9 +143,9 @@ export const useGame = () => {
       }
       case 'village': {
         const expGain = event.value || CELL_EVENTS.VILLAGE.EXP_GAIN;
-        setExp(prev => prev + expGain);
-        setTimeout(checkLevelUp, 0);
-        message = `村人から歓迎され${expGain}の経験値を得た！`;
+        const expMessage = `村人から歓迎され${expGain}の経験値を得た！`;
+        addExp(expGain, expMessage);
+        message = '';
         break;
       }
       case 'monster':
@@ -187,9 +190,8 @@ export const useGame = () => {
       }
 
       if (monsterExp > 0) {
-        setExp(prev => prev + monsterExp);
-        setBattleMessage(`${message}\n${monsterExp}の経験値を獲得！`);
-        setTimeout(checkLevelUp, 0);
+        const expMessage = `${message}\n${monsterExp}の経験値を獲得！`;
+        addExp(monsterExp, expMessage);
       } else {
         setBattleMessage(message);
       }

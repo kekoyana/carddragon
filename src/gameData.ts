@@ -101,18 +101,18 @@ export const CELL_EVENTS = {
   },
   TRAP: {
     DAMAGE: 2,
-    PROBABILITY: 0.25        // 落とし穴の確率を上昇
+    PROBABILITY: 0.03        // 落とし穴の確率を低下
   },
   TREASURE: {
     PROBABILITY: 0.15
   },
   CARRIAGE: {
     MOVE_FORWARD: 3,
-    PROBABILITY: 0.15
+    PROBABILITY: 0.05
   },
   DETOUR: {
     MOVE_BACK: 2,
-    PROBABILITY: 0.15
+    PROBABILITY: 0.03        // 戻るマスの確率を低下
   },
   VILLAGE: {
     EXP_GAIN: 2,

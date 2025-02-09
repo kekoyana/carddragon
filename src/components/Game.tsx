@@ -208,7 +208,7 @@ const Game = () => {
             </>
           )}
           <button 
-            className={styles.button}
+            className={styles.restartButton}
             onClick={startGame}
           >
             もう一度遊ぶ

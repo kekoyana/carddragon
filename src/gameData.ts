@@ -95,83 +95,72 @@ export const CELL_COLOR_PROBABILITY = {
 
 // マス色ごとのイベント設定
 export const CELL_EVENTS = {
-  blue: {
-    GOOD: {  // 良いイベント
-      INN: {
-        HEAL_AMOUNT: [4, 7] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.3
-      },
-      TREASURE: {
-        PROBABILITY: 0.3,
-        DOUBLE_DRAW_CHANCE: 0.3
-      },
-      CARRIAGE: {
-        MOVE_FORWARD: [2, 4] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.2
-      },
-      VILLAGE: {
-        EXP_GAIN: [2, 4] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.2
-      }
-    },
-    BAD: {   // 悪いイベント
-      TRAP: {
-        DAMAGE: 2,
-        PROBABILITY: 0
-      },
-      DETOUR: {
-        MOVE_BACK: 2,
-        PROBABILITY: 0
-      }
-    }
-  },
-  red: {
-    GOOD: {  // 良いイベント
-      INN: {
-        HEAL_AMOUNT: 5,
-        PROBABILITY: 0
-      },
-      TREASURE: {
-        PROBABILITY: 0
-      }
-    },
-    BAD: {   // 悪いイベント
-      TRAP: {
-        DAMAGE: [2, 4] as [number, number],  // [最小値, 最大値]
+  blue: {  // 青マス：良いイベントのみ
+    GOOD: {
+      TREASURE: {  // カード1枚
         PROBABILITY: 0.6
       },
+      TREASURE_PLUS: {  // カード2枚
+        PROBABILITY: 0.3
+      },
+      INN: {
+        HEAL_AMOUNT: [4, 7] as [number, number],
+        PROBABILITY: 0.05
+      },
+      CARRIAGE: {
+        MOVE_FORWARD: [2, 4] as [number, number],
+        PROBABILITY: 0.05
+      }
+    },
+    BAD: {}  // 青マスには悪いイベントなし
+  },
+  red: {  // 赤マス：悪いイベントのみ
+    GOOD: {},  // 赤マスには良いイベントなし
+    BAD: {
+      MONSTER: {  // モンスター出現
+        PROBABILITY: 0.9
+      },
+      TRAP: {
+        DAMAGE: [2, 4] as [number, number],
+        PROBABILITY: 0.05
+      },
       DETOUR: {
-        MOVE_BACK: [1, 3] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.4
+        MOVE_BACK: [1, 3] as [number, number],
+        PROBABILITY: 0.05
       }
     }
   },
-  normal: {
-    GOOD: {  // 良いイベント
-      INN: {
-        HEAL_AMOUNT: [3, 6] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.15
+  normal: {  // 通常マス：なにも起きない確率50%
+    GOOD: {
+      NOTHING: {  // なにも起きない
+        PROBABILITY: 0.5
       },
-      TREASURE: {
+      TREASURE: {  // カード1枚
         PROBABILITY: 0.1
+      },
+      TREASURE_PLUS: {  // カード2枚
+        PROBABILITY: 0.05
+      },
+      INN: {
+        HEAL_AMOUNT: [3, 6] as [number, number],
+        PROBABILITY: 0.05
       },
       CARRIAGE: {
-        MOVE_FORWARD: [2, 4] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.1
-      },
-      VILLAGE: {
-        EXP_GAIN: [3, 6] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.1
+        MOVE_FORWARD: [2, 4] as [number, number],
+        PROBABILITY: 0.05
       }
     },
-    BAD: {   // 悪いイベント
+    BAD: {
+      MONSTER: {  // モンスター出現
+        PROBABILITY: 0.15
+      },
       TRAP: {
-        DAMAGE: [2, 4] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.1
+        DAMAGE: [2, 4] as [number, number],
+        PROBABILITY: 0.05
       },
       DETOUR: {
-        MOVE_BACK: [1, 3] as [number, number],  // [最小値, 最大値]
-        PROBABILITY: 0.1
+        MOVE_BACK: [1, 3] as [number, number],
+        PROBABILITY: 0.05
       }
     }
   }

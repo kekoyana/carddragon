@@ -23,15 +23,10 @@ const getRandomCellColor = (): CellColor => {
 };
 
 export const getRandomEventForCell = (color: CellColor): CellEventResult => {
-  const random = Math.random();
   const events = CELL_EVENTS[color];
+  const isGoodEvent = Math.random() < (color === 'blue' ? 1 : color === 'red' ? 0 : 0.5);
+  const eventList = events[isGoodEvent ? 'GOOD' : 'BAD'];
   
-  // イベントタイプの抽選（良いイベントか悪いイベントか）
-  const isGoodEvent = random < (color === 'blue' ? 0.8 : color === 'red' ? 0.2 : 0.5);
-  const eventCategory = isGoodEvent ? 'GOOD' : 'BAD';
-  const eventList = events[eventCategory];
-
-  // イベントの抽選
   let currentProb = 0;
   const eventRoll = Math.random();
 
@@ -39,6 +34,8 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
     currentProb += eventData.PROBABILITY;
     if (eventRoll < currentProb) {
       switch (eventType) {
+        case 'NOTHING':
+          return { type: null };
         case 'INN': {
           const healAmount = getRandomValueFromRange(eventData.HEAL_AMOUNT);
           return { type: 'inn', value: healAmount };
@@ -48,9 +45,10 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
           return { type: 'trap', value: damage };
         }
         case 'TREASURE': {
-          // 青マスでの宝箱イベントで2枚ドローの判定を行う
-          const doubleDraw = color === 'blue' && Math.random() < 0.3;  // 30%の確率で2枚ドロー
-          return { type: 'treasure', doubleDraw };
+          return { type: 'treasure', doubleDraw: false };
+        }
+        case 'TREASURE_PLUS': {
+          return { type: 'treasure', doubleDraw: true };
         }
         case 'CARRIAGE': {
           const moveForward = getRandomValueFromRange(eventData.MOVE_FORWARD);
@@ -60,17 +58,11 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
           const moveBack = getRandomValueFromRange(eventData.MOVE_BACK);
           return { type: 'detour', value: moveBack };
         }
-        case 'VILLAGE': {
-          const expGain = getRandomValueFromRange(eventData.EXP_GAIN);
-          return { type: 'village', value: expGain };
+        case 'MONSTER': {
+          return { type: 'monster' };
         }
       }
     }
-  }
-
-  // モンスター出現判定
-  if (Math.random() < GAME_CONFIG.MONSTER_SPAWN_RATE * (color === 'red' ? 2.5 : 1)) {
-    return { type: 'monster' };
   }
 
   return { type: null };

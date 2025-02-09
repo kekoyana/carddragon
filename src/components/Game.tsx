@@ -195,8 +195,8 @@ const Game = () => {
         <div className={styles.gameOver}>
           {victory ? (
             <>
-              <p>ゲームクリア！</p>
-              <p>ゴールまで{turns}ターンかかりました！</p>
+              <p>おめでとう！ドラゴンを倒して世界を救いました！</p>
+              <p>クリア記録: {turns}ターン！</p>
             </>
           ) : (
             <>

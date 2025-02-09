@@ -270,14 +270,23 @@ export const useGame = () => {
     return message;
   };
 
+  // ダメージにゆらぎを追加する
+  const addDamageVariation = (baseDamage: number): number => {
+    const variation = 0.2; // ±20%の変動
+    const randomFactor = 1 + (Math.random() * variation * 2 - variation);
+    return Math.round(baseDamage * randomFactor);
+  };
+
   // ダメージ計算
   const calculateDamage = (attacker: 'player' | 'monster', weaponPower: number = 0) => {
     if (!currentMonster) return 0;
     
     if (attacker === 'player') {
-      return Math.max(1, attack + weaponPower - currentMonster.defense);
+      const baseDamage = Math.max(1, attack + weaponPower - currentMonster.defense);
+      return addDamageVariation(baseDamage);
     } else {
-      return Math.max(0, currentMonster.attack - 1);
+      const baseDamage = Math.max(0, currentMonster.attack - 1);
+      return addDamageVariation(baseDamage);
     }
   };
 
@@ -299,12 +308,11 @@ export const useGame = () => {
       
       // ドラゴンを倒した場合は勝利
       if (currentMonster.isBoss) {
-        setBattleMessage("ゲームオーバー！あなたは敗北しました。");
-        triggerGameOverAnimation();
-        playGameOverSound();
         setGameOver(true);
         setVictory(true);
-        setBattleMessage(`${message}\nドラゴンを倒し、世界に平和が訪れた！`);
+        setBattleMessage(`${message}\n\n伝説のドラゴンを討伐！\n君は真の英雄となった！\n世界に平和が訪れた！`);
+        triggerGameOverAnimation();
+        playGameOverSound();
         return;
       }
 

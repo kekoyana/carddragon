@@ -189,8 +189,9 @@ export const useGame = () => {
     if (currentLevel > level) {
       const levelDiff = currentLevel - level;
       setLevel(currentLevel);
-      setMaxHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
-      setHp(prev => prev + LEVEL_UP_STATS.HP * levelDiff);
+      const hpIncrease = LEVEL_UP_STATS.HP * levelDiff;
+      setMaxHp(prev => prev + hpIncrease);
+      updateHp(hp + hpIncrease);
       setAttack(prev => prev + LEVEL_UP_STATS.ATTACK * levelDiff);
     }
 
@@ -203,13 +204,20 @@ export const useGame = () => {
     }
   };
 
-  // HPステータスのチェックと警告メッセージ
-  const checkHpStatus = (currentHp: number) => {
-    if (currentHp <= maxHp * 0.25) {
+  // HP更新の一元管理
+  const updateHp = (newHp: number) => {
+    // HP値を範囲内に収める
+    const clampedHp = Math.max(0, Math.min(maxHp, newHp));
+    setHp(clampedHp);
+
+    // HPステータスチェックと警告メッセージ
+    if (clampedHp <= maxHp * 0.25) {
       setBattleMessage(prev => `${prev}\n⚠️ HP残りわずか！危険な状態です！`);
-    } else if (currentHp <= maxHp * 0.5) {
+    } else if (clampedHp <= maxHp * 0.5) {
       setBattleMessage(prev => `${prev}\n⚡ HPが半分を切っています`);
     }
+
+    return clampedHp;
   };
 
   // イベント処理
@@ -223,17 +231,14 @@ export const useGame = () => {
     switch (event.type) {
       case 'inn': {
         const healAmount = maxHp; // Set healAmount to maxHp for full restoration
-        const newHp = Math.min(maxHp, hp + healAmount);
-        setHp(newHp);
+        updateHp(hp + healAmount);
         message = `宿屋で休んで${healAmount}回復した！`;
         break;
       }
       case 'trap': {
         const damage = event.value ?? 2;
-        const newHp = Math.max(0, hp - damage);
-        setHp(newHp);
+        updateHp(hp - damage);
         message = `落とし穴に落ちて${damage}ダメージを受けた！`;
-        checkHpStatus(newHp);
         break;
       }
       case 'treasure': {
@@ -364,9 +369,7 @@ export const useGame = () => {
     }
 
     const monsterDamage = calculateDamage('monster');
-    const newHp = Math.max(0, hp - monsterDamage);
-    setHp(newHp);
-    checkHpStatus(newHp);
+    const newHp = updateHp(hp - monsterDamage);
     
     const damageMessage = `${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`;
     processBattleResult(damageMessage, newMonsterHp);
@@ -401,7 +404,7 @@ export const useGame = () => {
   // 回復処理
   const handleHealing = (card: string) => {
     const healAmount = card === 'H+' ? GAME_CONFIG.HEAL_PLUS_AMOUNT : GAME_CONFIG.HEAL_AMOUNT;
-    setHp(prev => Math.min(maxHp, prev + healAmount));
+    updateHp(hp + healAmount);
     setBattleMessage(`+${healAmount}回復！`);
   };
 
@@ -492,7 +495,7 @@ export const useGame = () => {
     setLevel(INITIAL_STATS.LEVEL);
     setExp(0);
     setMaxHp(INITIAL_STATS.MAX_HP);
-    setHp(INITIAL_STATS.MAX_HP);
+    updateHp(INITIAL_STATS.MAX_HP);
     setAttack(INITIAL_STATS.ATTACK);
     setGameOver(false);
     setVictory(false);

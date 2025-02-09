@@ -1,10 +1,43 @@
+import { useState, useEffect } from 'react';
 import styles from './Game.module.css';
 import { useGame } from '../hooks/useGame';
 import { Card, MapCell } from '../types';
 import { GAME_CONFIG } from '../gameData';
 import { getWeaponName } from '../gameUtils';
 
+interface TutorialStep {
+  message: string;
+  position: {
+    top?: string;
+    left?: string;
+    right?: string;
+    bottom?: string;
+  };
+  direction: 'top' | 'bottom' | 'left' | 'right';
+}
+
+const TUTORIAL_STEPS: TutorialStep[] = [
+  {
+    message: 'マスの色によって異なるイベントが発生します。\n青マス：カードや回復などの良いイベント\n赤マス：モンスターや罠などの危険なイベント\n通常マス：ランダムなイベント',
+    position: { top: '220px', left: '20px' },
+    direction: 'bottom'
+  },
+  {
+    message: '手持ちのカードを使ってマスを進みます。\n・数字のカード：指定マス進む\n・🧪のカード：HPを回復\n・⚔️のカード：武器を装備して攻撃力アップ',
+    position: { bottom: '220px', left: '20px' },
+    direction: 'top'
+  },
+  {
+    message: 'モンスターと戦うときは「攻撃」か「逃げる」を選べます。\nレベルアップすると最大HPと攻撃力が上昇します！',
+    position: { top: '50%', right: '20px' },
+    direction: 'left'
+  }
+];
+
 const Game = () => {
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
+
   const {
     position,
     cards,
@@ -29,6 +62,15 @@ const Game = () => {
     getRequiredExp,
     handleWait,
   } = useGame();
+
+  // ゲーム開始時にチュートリアルを表示（一度だけ）
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+      localStorage.setItem('hasSeenTutorial', 'true');
+    }
+  }, []);
 
   const renderCard = (card: Card) => {
     if (card === null) return '';
@@ -119,7 +161,7 @@ const Game = () => {
             className={styles.cellContainer}
             style={{
               transform: `translateX(-${position * 60}px)`,
-              paddingLeft: '10px' // 左端に少し余白を追加
+              paddingLeft: '10px'
             }}
           >
             {getNextCells().map((cell, i) => renderCell(cell, i === position))}
@@ -212,6 +254,30 @@ const Game = () => {
             onClick={startGame}
           >
             もう一度遊ぶ
+          </button>
+        </div>
+      )}
+
+      {/* チュートリアル */}
+      {showTutorial && tutorialStep < TUTORIAL_STEPS.length && (
+        <div
+          className={`${styles.tutorial} ${styles[TUTORIAL_STEPS[tutorialStep].direction]}`}
+          style={TUTORIAL_STEPS[tutorialStep].position}
+        >
+          {TUTORIAL_STEPS[tutorialStep].message.split('\n').map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+          <button
+            className={styles.tutorialButton}
+            onClick={() => {
+              if (tutorialStep === TUTORIAL_STEPS.length - 1) {
+                setShowTutorial(false);
+              } else {
+                setTutorialStep(step => step + 1);
+              }
+            }}
+          >
+            {tutorialStep === TUTORIAL_STEPS.length - 1 ? 'はじめる' : '次へ'}
           </button>
         </div>
       )}

@@ -467,3 +467,72 @@
 .restartButton:hover::after {
   left: 100%;
 }
+
+/* チュートリアルのスタイル */
+.tutorial {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #3498db;
+  color: white;
+  font-size: 16px;
+  z-index: 1000;
+  max-width: 300px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.5s ease;
+}
+
+.tutorial::after {
+  content: '';
+  position: absolute;
+  border: 10px solid transparent;
+}
+
+.tutorial.top::after {
+  border-top-color: #3498db;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tutorial.bottom::after {
+  border-bottom-color: #3498db;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tutorial.left::after {
+  border-left-color: #3498db;
+  right: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tutorial.right::after {
+  border-right-color: #3498db;
+  left: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tutorialButton {
+  background: #3498db;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: white;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.tutorialButton:hover {
+  background: #2980b9;
+}

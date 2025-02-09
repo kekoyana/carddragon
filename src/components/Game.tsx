@@ -111,8 +111,14 @@ const Game = () => {
         </div>
 
         <div className={styles.nextCells}>
-          <div className={styles.cellContainer}>
-            {getNextCells().map((cell, i) => renderCell(cell, i === 0))}
+          <div
+            className={styles.cellContainer}
+            style={{
+              transform: `translateX(-${position * 60}px)`,
+              paddingLeft: '10px' // 左端に少し余白を追加
+            }}
+          >
+            {getNextCells().map((cell, i) => renderCell(cell, i === position))}
           </div>
         </div>
       </div>

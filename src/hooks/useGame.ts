@@ -449,9 +449,9 @@ export const useGame = () => {
     drawInitialCards();
   };
 
-  // 次の6マスの状態を取得
+  // マップ全体を返す
   const getNextCells = () => {
-    return mapData.slice(position, position + 7);
+    return mapData;
   };
 
   useEffect(() => {

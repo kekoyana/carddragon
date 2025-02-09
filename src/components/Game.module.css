@@ -126,12 +126,14 @@
   width: 100%;
   overflow: hidden;
   padding: 0 10px;
+  position: relative;
 }
 
 .cellContainer {
   display: flex;
   gap: 15px;
   padding: 10px;
+  transition: transform 0.5s ease;
 }
 
 .cell {

@@ -227,14 +227,20 @@ export const useGame = () => {
       }
       case 'carriage': {
         const steps = event.value ?? 3;
-        setPosition(prev => Math.min(GAME_CONFIG.GOAL_POSITION, prev + steps));
-        message = `馬車に乗って${steps}マス進んだ！`;
+        message = `馬車に乗って${steps}マス進みます！`;
+        setTimeout(() => {
+          setPosition(prev => Math.min(GAME_CONFIG.GOAL_POSITION, prev + steps));
+          setBattleMessage(prev => `${prev}\n${steps}マス進みました！`);
+        }, 1000);
         break;
       }
       case 'detour': {
         const backSteps = event.value ?? 2;
-        setPosition(prev => Math.max(0, prev - backSteps));
-        message = `回り道で${backSteps}マス戻った...`;
+        message = `回り道で${backSteps}マス戻ります...`;
+        setTimeout(() => {
+          setPosition(prev => Math.max(0, prev - backSteps));
+          setBattleMessage(prev => `${prev}\n${backSteps}マス戻りました...`);
+        }, 1000);
         break;
       }
       case 'village': {

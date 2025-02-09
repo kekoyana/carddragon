@@ -61,7 +61,7 @@ export const useGame = () => {
     message.style.gap = '1rem';
 
     const gameOverText = document.createElement('div');
-    gameOverText.textContent = 'ゲームオーバー';
+    gameOverText.textContent = 'ゲームクリア';
     gameOverText.style.fontSize = '3rem';
     gameOverText.style.color = '#ff3b30';
     gameOverText.style.fontWeight = 'bold';
@@ -69,7 +69,7 @@ export const useGame = () => {
     message.appendChild(gameOverText);
 
     const subText = document.createElement('div');
-    subText.textContent = 'HPが0になりました...';
+    subText.textContent = 'おめでとうございます！';
     subText.style.fontSize = '1.5rem';
     subText.style.color = 'white';
     subText.style.opacity = '0.8';

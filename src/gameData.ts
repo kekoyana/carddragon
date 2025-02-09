@@ -59,8 +59,8 @@ export const WEAPON_TIERS = {
 export const WEAPON_NAMES = {
   WEAK: ['ダガー', 'ブロンズソード'],
   MEDIUM: ['バスタードソード', 'バトルアクス', 'ウォーハンマー'],
-  STRONG: ['ミスリルブレード', 'フレイムソード', 'ドラゴンバスター', 'ルーンブレード'],
-  LEGENDARY: ['デーモンスレイヤー', 'エクスカリバー', 'クリスタルソード', 'ラグナロク']
+  STRONG: ['ダマスカス', 'フレイムソード', '方天画戟', 'ルーンブレード'],
+  LEGENDARY: ['ドラゴンバスター', 'エクスカリバー', 'クリスタルソード', 'ラグナロク']
 } as const;
 
 // プレイヤーの初期ステータス
@@ -160,13 +160,13 @@ export const CELL_EVENTS = {
         PROBABILITY: 0.1
       },
       VILLAGE: {
-        EXP_GAIN: 2,
+        EXP_GAIN: 5,
         PROBABILITY: 0.1
       }
     },
     BAD: {   // 悪いイベント
       TRAP: {
-        DAMAGE: 2,
+        DAMAGE: 3,
         PROBABILITY: 0.15
       },
       DETOUR: {

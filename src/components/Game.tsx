@@ -68,6 +68,7 @@ const Game = () => {
               />
               <span>{position}マス / {GAME_CONFIG.GOAL_POSITION}マス</span>
             </div>
+            <p className={styles.turns}>ターン: {turns}</p>
           </div>
           <div>
             <p>Level: {level}</p>
@@ -89,7 +90,6 @@ const Game = () => {
               <span>{hp}/{maxHp}</span>
             </div>
             <p className={styles.attack}>攻撃力: {attack}</p>
-            <p className={styles.turns}>ターン: {turns}</p>
           </div>
         </div>
 

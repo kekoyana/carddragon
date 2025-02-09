@@ -39,22 +39,31 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
     currentProb += eventData.PROBABILITY;
     if (eventRoll < currentProb) {
       switch (eventType) {
-        case 'INN':
-          return { type: 'inn', value: eventData.HEAL_AMOUNT };
-        case 'TRAP':
-          return { type: 'trap', value: eventData.DAMAGE };
-        case 'TREASURE':
+        case 'INN': {
+          const healAmount = getRandomValueFromRange(eventData.HEAL_AMOUNT);
+          return { type: 'inn', value: healAmount };
+        }
+        case 'TRAP': {
+          const damage = getRandomValueFromRange(eventData.DAMAGE);
+          return { type: 'trap', value: damage };
+        }
+        case 'TREASURE': {
           // 青マスでの宝箱イベントで2枚ドローの判定を行う
-          const isDoubleDraw = color === 'blue' &&
-            eventList.TREASURE.DOUBLE_DRAW_CHANCE &&
-            Math.random() < eventList.TREASURE.DOUBLE_DRAW_CHANCE;
-          return { type: 'treasure', doubleDraw: isDoubleDraw };
-        case 'CARRIAGE':
-          return { type: 'carriage', value: eventData.MOVE_FORWARD };
-        case 'DETOUR':
-          return { type: 'detour', value: eventData.MOVE_BACK };
-        case 'VILLAGE':
-          return { type: 'village', value: eventData.EXP_GAIN };
+          const doubleDraw = color === 'blue' && Math.random() < 0.3;  // 30%の確率で2枚ドロー
+          return { type: 'treasure', doubleDraw };
+        }
+        case 'CARRIAGE': {
+          const moveForward = getRandomValueFromRange(eventData.MOVE_FORWARD);
+          return { type: 'carriage', value: moveForward };
+        }
+        case 'DETOUR': {
+          const moveBack = getRandomValueFromRange(eventData.MOVE_BACK);
+          return { type: 'detour', value: moveBack };
+        }
+        case 'VILLAGE': {
+          const expGain = getRandomValueFromRange(eventData.EXP_GAIN);
+          return { type: 'village', value: expGain };
+        }
       }
     }
   }
@@ -143,4 +152,10 @@ export const getRequiredExp = (currentLevel: number): number => {
   // レベル1→2は6exp（弱いモンスター2体）
   // その後は徐々に上昇（レベル2→3は8exp、レベル3→4は12exp、レベル4→5は18exp）
   return Math.floor(6 * Math.pow(1.5, currentLevel - 1));
+};
+
+// 範囲から整数の乱数を生成する関数
+export const getRandomValueFromRange = (range: [number, number]): number => {
+  const [min, max] = range;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };

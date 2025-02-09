@@ -98,30 +98,30 @@ export const CELL_EVENTS = {
   blue: {
     GOOD: {  // 良いイベント
       INN: {
-        HEAL_AMOUNT: 5,
-        PROBABILITY: 0.4
+        HEAL_AMOUNT: [4, 7] as [number, number],  // [最小値, 最大値]
+        PROBABILITY: 0.3
       },
       TREASURE: {
         PROBABILITY: 0.3,
-        DOUBLE_DRAW_CHANCE: 0.3  // 30%の確率で2枚引く
+        DOUBLE_DRAW_CHANCE: 0.3
       },
       CARRIAGE: {
-        MOVE_FORWARD: 3,
+        MOVE_FORWARD: [2, 4] as [number, number],  // [最小値, 最大値]
         PROBABILITY: 0.2
       },
       VILLAGE: {
-        EXP_GAIN: 2,
-        PROBABILITY: 0.1
+        EXP_GAIN: [2, 4] as [number, number],  // [最小値, 最大値]
+        PROBABILITY: 0.2
       }
     },
     BAD: {   // 悪いイベント
       TRAP: {
         DAMAGE: 2,
-        PROBABILITY: 0.05
+        PROBABILITY: 0
       },
       DETOUR: {
         MOVE_BACK: 2,
-        PROBABILITY: 0.05
+        PROBABILITY: 0
       }
     }
   },
@@ -129,48 +129,48 @@ export const CELL_EVENTS = {
     GOOD: {  // 良いイベント
       INN: {
         HEAL_AMOUNT: 5,
-        PROBABILITY: 0.05
+        PROBABILITY: 0
       },
       TREASURE: {
-        PROBABILITY: 0.05
+        PROBABILITY: 0
       }
     },
     BAD: {   // 悪いイベント
       TRAP: {
-        DAMAGE: 2,
-        PROBABILITY: 0.4
+        DAMAGE: [2, 4] as [number, number],  // [最小値, 最大値]
+        PROBABILITY: 0.6
       },
       DETOUR: {
-        MOVE_BACK: 2,
-        PROBABILITY: 0.3
+        MOVE_BACK: [1, 3] as [number, number],  // [最小値, 最大値]
+        PROBABILITY: 0.4
       }
     }
   },
   normal: {
     GOOD: {  // 良いイベント
       INN: {
-        HEAL_AMOUNT: 5,
-        PROBABILITY: 0.2
-      },
-      TREASURE: {
+        HEAL_AMOUNT: [3, 6] as [number, number],  // [最小値, 最大値]
         PROBABILITY: 0.15
       },
+      TREASURE: {
+        PROBABILITY: 0.1
+      },
       CARRIAGE: {
-        MOVE_FORWARD: 3,
+        MOVE_FORWARD: [2, 4] as [number, number],  // [最小値, 最大値]
         PROBABILITY: 0.1
       },
       VILLAGE: {
-        EXP_GAIN: 5,
+        EXP_GAIN: [3, 6] as [number, number],  // [最小値, 最大値]
         PROBABILITY: 0.1
       }
     },
     BAD: {   // 悪いイベント
       TRAP: {
-        DAMAGE: 3,
-        PROBABILITY: 0.15
+        DAMAGE: [2, 4] as [number, number],  // [最小値, 最大値]
+        PROBABILITY: 0.1
       },
       DETOUR: {
-        MOVE_BACK: 2,
+        MOVE_BACK: [1, 3] as [number, number],  // [最小値, 最大値]
         PROBABILITY: 0.1
       }
     }

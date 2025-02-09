@@ -13,6 +13,12 @@ export type CellColor = 'blue' | 'normal' | 'red';
 
 export type EventType = 'inn' | 'trap' | 'treasure' | 'carriage' | 'detour' | 'village' | 'monster' | null;
 
+// 効果値の範囲を表す型
+export type Range = {
+  MIN: number;
+  MAX: number;
+};
+
 export type CellEventCategory = 'GOOD' | 'BAD';
 
 export interface CellEventResult {

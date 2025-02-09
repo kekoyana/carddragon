@@ -159,9 +159,15 @@ export const useGame = () => {
   // ターン終了処理
   const turnEnd = () => {
     if (checkGameStatus()) return;
-    
     setTurns(prev => prev + 1);
-    drawOneCard();
+  };
+
+  // 待機処理
+  const handleWait = () => {
+    if (gameOver) return;
+    const card = drawOneCard();
+    setBattleMessage(`カードを発掘して${getCardDescription(card)}を見つけた！`);
+    turnEnd();
   };
 
   // 経験値を加算してレベルアップをチェックする関数
@@ -220,9 +226,12 @@ export const useGame = () => {
       }
       case 'treasure': {
         const randomCard = drawOneCard();
-        message = typeof randomCard === 'object' && randomCard?.type === 'weapon'
-          ? `宝箱を見つけた！${getWeaponName(randomCard.power)}を手に入れた！`
-          : '宝箱を見つけた！アイテムを手に入れた！';
+        if (event.doubleDraw) {
+          const secondCard = drawOneCard(); // 2枚目のカードを引く
+          message = `宝箱を見つけた！${getCardDescription(randomCard)}と${getCardDescription(secondCard)}を手に入れた！`;
+        } else {
+          message = `宝箱を見つけた！${getCardDescription(randomCard)}を手に入れた！`;
+        }
         break;
       }
       case 'carriage': {
@@ -291,8 +300,8 @@ export const useGame = () => {
       // ドラゴンを倒した場合は勝利
       if (currentMonster.isBoss) {
         setBattleMessage("ゲームオーバー！あなたは敗北しました。");
-        triggerGameOverAnimation(); // アニメーションを呼び出す
-        playGameOverSound(); // 効果音を再生する
+        triggerGameOverAnimation();
+        playGameOverSound();
         setGameOver(true);
         setVictory(true);
         setBattleMessage(`${message}\nドラゴンを倒し、世界に平和が訪れた！`);
@@ -307,6 +316,8 @@ export const useGame = () => {
       }
       setInBattle(false);
       setCurrentMonster(null);
+      const card = drawOneCard(); // モンスターを倒したときにカードを引く
+      setBattleMessage(prev => `${prev}\n戦利品として${getCardDescription(card)}を手に入れた！`);
     } else {
       setBattleMessage(message);
       setCurrentMonster(prev => prev ? {
@@ -392,9 +403,23 @@ export const useGame = () => {
   // カードを捨てる
   const handleDiscard = (index: number) => {
     if (gameOver || !cards[index]) return;
+    const discardedCard = cards[index];
     removeCard(index);
+    const newCard = drawOneCard(); // カードを捨てたときにカードを引く
+    setBattleMessage(`${getCardDescription(discardedCard)}を${getCardDescription(newCard)}に交換した！`);
     turnEnd();
     setIsDiscardMode(false);
+  };
+
+  // カードの説明を取得
+  const getCardDescription = (card: Card): string => {
+    if (card === null) return '';
+    if (typeof card === 'object' && card.type === 'weapon') {
+      return getWeaponName(card.power);
+    }
+    if (card === 'H') return 'ポーション';
+    if (card === 'H+') return 'ポーション+';
+    return `${card}マス進むカード`;
   };
 
   // カードの削除
@@ -490,5 +515,6 @@ export const useGame = () => {
     getNextCells,
     setIsDiscardMode,
     getRequiredExp,
+    handleWait,
   };
 };

@@ -18,6 +18,7 @@ export type CellEventCategory = 'GOOD' | 'BAD';
 export interface CellEventResult {
   type: EventType;
   value?: number;
+  doubleDraw?: boolean;  // 2枚ドローするかどうか
 }
 
 export interface MapCell {

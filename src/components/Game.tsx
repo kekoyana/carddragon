@@ -27,6 +27,7 @@ const Game = () => {
     getNextCells,
     setIsDiscardMode,
     getRequiredExp,
+    handleWait,
   } = useGame();
 
   const renderCard = (card: Card) => {
@@ -175,8 +176,17 @@ const Game = () => {
               onClick={() => setIsDiscardMode(!isDiscardMode)}
               disabled={gameOver}
             >
-              {isDiscardMode ? 'キャンセル' : 'カードを捨てる'}
+              {isDiscardMode ? 'キャンセル' : 'カード交換'}
             </button>
+            {!inBattle && (
+              <button
+                className={styles.discardActionButton}
+                onClick={handleWait}
+                disabled={gameOver}
+              >
+                カード発掘
+              </button>
+            )}
           </div>
         </div>
       </div>

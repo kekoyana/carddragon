@@ -44,7 +44,11 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
         case 'TRAP':
           return { type: 'trap', value: eventData.DAMAGE };
         case 'TREASURE':
-          return { type: 'treasure' };
+          // 青マスでの宝箱イベントで2枚ドローの判定を行う
+          const isDoubleDraw = color === 'blue' &&
+            eventList.TREASURE.DOUBLE_DRAW_CHANCE &&
+            Math.random() < eventList.TREASURE.DOUBLE_DRAW_CHANCE;
+          return { type: 'treasure', doubleDraw: isDoubleDraw };
         case 'CARRIAGE':
           return { type: 'carriage', value: eventData.MOVE_FORWARD };
         case 'DETOUR':
@@ -56,7 +60,7 @@ export const getRandomEventForCell = (color: CellColor): CellEventResult => {
   }
 
   // モンスター出現判定
-  if (Math.random() < GAME_CONFIG.MONSTER_SPAWN_RATE * (color === 'red' ? 1.5 : 1)) {
+  if (Math.random() < GAME_CONFIG.MONSTER_SPAWN_RATE * (color === 'red' ? 2.5 : 1)) {
     return { type: 'monster' };
   }
 

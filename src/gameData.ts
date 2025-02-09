@@ -88,9 +88,9 @@ export const GAME_CONFIG = {
 
 // マスの色ごとの確率設定
 export const CELL_COLOR_PROBABILITY = {
-  BLUE: 0.2,    // 青マス（良いイベント）を減少
-  RED: 0.5,     // 赤マス（悪いイベント）を増加
-  NORMAL: 0.3   // 通常マス
+  BLUE: 0.35,    // 青マス（良いイベント）を増加
+  RED: 0.35,     // 赤マス（悪いイベント）
+  NORMAL: 0.3    // 通常マス
 } as const;
 
 // マス色ごとのイベント設定
@@ -102,7 +102,8 @@ export const CELL_EVENTS = {
         PROBABILITY: 0.4
       },
       TREASURE: {
-        PROBABILITY: 0.3
+        PROBABILITY: 0.3,
+        DOUBLE_DRAW_CHANCE: 0.3  // 30%の確率で2枚引く
       },
       CARRIAGE: {
         MOVE_FORWARD: 3,

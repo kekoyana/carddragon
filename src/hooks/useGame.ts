@@ -203,6 +203,15 @@ export const useGame = () => {
     }
   };
 
+  // HPステータスのチェックと警告メッセージ
+  const checkHpStatus = (currentHp: number) => {
+    if (currentHp <= maxHp * 0.25) {
+      setBattleMessage(prev => `${prev}\n⚠️ HP残りわずか！危険な状態です！`);
+    } else if (currentHp <= maxHp * 0.5) {
+      setBattleMessage(prev => `${prev}\n⚡ HPが半分を切っています`);
+    }
+  };
+
   // イベント処理
   const handleCellEvent = (position: number): string => {
     const cell = mapData[position];
@@ -214,14 +223,17 @@ export const useGame = () => {
     switch (event.type) {
       case 'inn': {
         const healAmount = maxHp; // Set healAmount to maxHp for full restoration
-        setHp(prev => Math.min(maxHp, prev + healAmount));
+        const newHp = Math.min(maxHp, hp + healAmount);
+        setHp(newHp);
         message = `宿屋で休んで${healAmount}回復した！`;
         break;
       }
       case 'trap': {
         const damage = event.value ?? 2;
-        setHp(prev => Math.max(0, prev - damage));
+        const newHp = Math.max(0, hp - damage);
+        setHp(newHp);
         message = `落とし穴に落ちて${damage}ダメージを受けた！`;
+        checkHpStatus(newHp);
         break;
       }
       case 'treasure': {
@@ -354,8 +366,10 @@ export const useGame = () => {
     const monsterDamage = calculateDamage('monster');
     const newHp = Math.max(0, hp - monsterDamage);
     setHp(newHp);
+    checkHpStatus(newHp);
     
-    processBattleResult(`${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`, newMonsterHp);
+    const damageMessage = `${attackMessage}\n${currentMonster.name}の反撃！${monsterDamage}ダメージを受けた！`;
+    processBattleResult(damageMessage, newMonsterHp);
     
     if (newHp <= 0) {
       setGameOver(true);

@@ -83,7 +83,10 @@ const Game = () => {
           </div>
           <div>
             <p>HP</p>
-            <div className={`${styles.progressBar} ${styles.hpBar}`}>
+            <div className={`${styles.progressBar} ${styles.hpBar} ${
+              hp <= maxHp * 0.25 ? styles.hpDanger :
+              hp <= maxHp * 0.5 ? styles.hpWarning : ''
+            }`}>
               <div
                 className={styles.progressFill}
                 style={{ width: `${(hp / maxHp) * 100}%` }}
